@@ -1,0 +1,24 @@
+# EditorConfig is awesome: http://EditorConfig.org
+# Go here: http://editorconfig.org/#download to download your editor's plugin.
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+
+# No newline required for these guys
+[*.html]
+insert_final_newline = false
+
+# No trimming whitespace in markdown
+[*.md]
+trim_trailing_whitespace = false
+
+# 4 space indentation
+[*.py, *.js, *.html, *.css]
+indent_style = space
+indent_size = 4
