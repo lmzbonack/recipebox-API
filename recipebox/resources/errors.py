@@ -33,6 +33,7 @@ errors = {
      },
      "RecipeAlreadyExistsError": {
          "message": "Recipe with given name already exists",
+         "value": "Recipe with given name already exists",
          "status": 400
      },
      "UpdatingRecipeError": {
@@ -49,6 +50,7 @@ errors = {
      },
      "EmailAlreadyExistsError": {
          "message": "User with given email address already exists",
+         "value": "User with given email address already exists",
          "status": 400
      },
      "UnauthorizedError": {
