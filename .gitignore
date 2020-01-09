@@ -21,3 +21,6 @@ htmlcov/
 .coverage
 .coverage.*
 *,cover
+
+# ignore config files for now
+*.cfg

@@ -1,6 +1,7 @@
 from flask_bcrypt import generate_password_hash, check_password_hash
+from flask_mongoengine import MongoEngine
 
-from recipebox.database.db import db
+db = MongoEngine()
 
 class Recipe(db.Document):
     name = db.StringField(required=True, unique=True)
