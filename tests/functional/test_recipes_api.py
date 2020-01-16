@@ -21,7 +21,6 @@ def test_retrieving_all_recipes_without_auth_fails(retrieve_auth_token, test_cli
 
 def test_posting_recipe_with_extra_data_fails(retrieve_auth_token, test_client, init_database):
     with pytest.raises(SchemaValidationError) as e:
-
         headers = {
             'Authorization': 'Bearer {}'.format(retrieve_auth_token),
             'Content-Type': 'application/json'

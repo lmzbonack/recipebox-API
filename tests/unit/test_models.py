@@ -12,7 +12,8 @@ def test_new_user(new_user):
     assert new_user.password == 'hashed'
     new_user.hash_password()
     assert new_user.password != 'hashed'
-    assert new_user.recipes == []
+    assert new_user.authored_recipes == []
+    assert new_user.starred_recipes == []
 
 def test_user_signin(new_user):
     """

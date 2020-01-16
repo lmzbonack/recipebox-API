@@ -22,7 +22,7 @@ class RecipesApi(Resource):
             body = request.get_json()
             user = User.objects.get(id=user_id)
             recipe =  Recipe(**body, created_by=user).save()
-            user.update(push__recipes=recipe)
+            user.update(push__authored_recipes=recipe)
             user.save()
             id = recipe.id
             return {'id': str(id)}, 201
@@ -35,6 +35,16 @@ class RecipesApi(Resource):
             raise InternalServerError
         
 class RecipeApi(Resource):
+    def get(self, id):
+        try:
+            recipes = Recipe.objects.get(id=id).to_json()
+            return Response(recipes, mimetype="application/json", status=200)
+        except DoesNotExist:
+            raise RecipeDoesNotExistError
+        except Exception as e:
+            print(e)
+            raise InternalServerError
+    
     @jwt_required
     def put(self, id):
         try:
@@ -64,10 +74,35 @@ class RecipeApi(Resource):
             print(e)
             raise InternalServerError
 
-    def get(self, id):
+class StarApi(Resource):
+    @jwt_required
+    def put(self, id):
         try:
-            recipes = Recipe.objects.get(id=id).to_json()
-            return Response(recipes, mimetype="application/json", status=200)
+            user_id = get_jwt_identity()
+            user = User.objects.get(id=user_id)
+            recipe = Recipe.objects.get(id=id, created_by=user_id)
+            if recipe not in user.starred_recipes:
+                user.update(push__starred_recipes=recipe)
+                return '', 200
+            else:
+                return 'Recipe is already starred for this user', 400
+        except DoesNotExist:
+            raise RecipeDoesNotExistError
+        except Exception as e:
+            print(e)
+            raise InternalServerError
+
+    @jwt_required
+    def delete(self, id):
+        try:
+            user_id = get_jwt_identity()
+            user = User.objects.get(id=user_id)
+            recipe = Recipe.objects.get(id=id, created_by=user_id)
+            if recipe in user.starred_recipes:
+                user.update(pull__starred_recipes=recipe)
+                return '', 200
+            else:
+                return 'Recipe is not currently starred for this user', 400
         except DoesNotExist:
             raise RecipeDoesNotExistError
         except Exception as e:

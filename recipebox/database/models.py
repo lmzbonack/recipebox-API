@@ -13,7 +13,8 @@ class Recipe(db.Document):
 class User(db.Document):
     email = db.EmailField(required=True, unique=True)
     password = db.StringField(required=True, min_length=6)
-    recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.PULL))
+    authored_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.PULL))
+    starred_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.DO_NOTHING))
 
     def hash_password(self):
         self.password = generate_password_hash(self.password).decode('utf8')
