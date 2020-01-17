@@ -6,6 +6,8 @@ db = MongoEngine()
 class Recipe(db.Document):
     name = db.StringField(required=True, unique=True)
     author = db.StringField(required=True)
+    prep_time = db.IntField()
+    cook_time = db.IntField()
     ingredients = db.ListField(db.StringField(), required=True)
     instructions = db.ListField(db.StringField(), required=True)
     created_by = db.ReferenceField('User')
@@ -23,3 +25,9 @@ class User(db.Document):
         return check_password_hash(self.password, password)
 
 User.register_delete_rule(Recipe, 'added_by', db.CASCADE)
+
+class ShoppingList(db.Document):
+    owner = db.ReferenceField('User')
+    name = db.StringField(required=True)
+    added_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.DO_NOTHING))
+    ingredients = db.ListField(db.StringField())

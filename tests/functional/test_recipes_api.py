@@ -11,7 +11,6 @@ def test_retrieve_all_recipes(retrieve_auth_token, test_client, init_database, a
     response = test_client.get('/api/recipes', headers=headers)
     assert response.status_code == 200
     dict_res = json.loads(response.data)
-    print(dict_res)
     dict_res[0]['name'] = 'Cozy Cornbread Skillet'
     dict_res[0]['author'] = 'Beth'
 
@@ -152,7 +151,6 @@ def test_updating_a_recipe_works(retrieve_auth_token, test_client, init_database
     #Check the response
     new_res = test_client.get('api/recipes/{}'.format(add_recipe), headers=headers)
     res_dict = json.loads(new_res.data)
-    print(res_dict)
     assert res_dict['name'] == 'Dank Chili Cornbread Skillet'
     assert res_dict['author'] == 'Luc'
     assert res_dict['ingredients'] == test_data['ingredients']
@@ -195,7 +193,7 @@ def test_updating_a_recipe_owned_by_a_separate_user_fails(retrieve_invalid_auth_
  
 # Probably should randomly generate a 24 character hex string to use for this and check that it is not
 # the valid ID as unlikely as that is
-def test_updating_a_recipe_fails_with_invalid_id_fails(retrieve_auth_token, test_client, init_database):
+def test_updating_a_recipe_with_invalid_id_fails(retrieve_auth_token, test_client, init_database):
     with pytest.raises(UpdatingRecipeError) as e:
         headers = {
             'Authorization': 'Bearer {}'.format(retrieve_auth_token),
@@ -230,14 +228,14 @@ def test_updating_a_recipe_fails_with_invalid_id_fails(retrieve_auth_token, test
     
         assert test_client.put('api/recipes/5e0eccabe439c556880fb91c', headers=headers, data=json.dumps(test_data)) 
 
-def test_fetching_a_single_recipe_works(test_client, init_database, add_recipe):
+def test_retrieving_a_single_recipe_works(test_client, init_database, add_recipe):
     response = test_client.get('api/recipes/{}'.format(add_recipe))
     assert response.status_code == 200
     res_dict = json.loads(response.data)
     assert res_dict['name'] == 'Dank Chili Cornbread Skillet'
     assert res_dict['author'] == 'Luc'
 
-def test_fetching_a_single_nonexistent_recipe_fails(test_client, init_database):
+def test_retrieving_a_single_nonexistent_recipe_fails(test_client, init_database):
     with pytest.raises(RecipeDoesNotExistError) as e:
         assert test_client.get('/api/recipes/5e0eccabe439c556880fb91c')
 

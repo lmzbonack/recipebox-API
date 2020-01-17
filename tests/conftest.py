@@ -2,7 +2,7 @@ import pytest, json
 from pymongo import MongoClient
 
 from recipebox import create_app
-from recipebox.database.models import Recipe, User
+from recipebox.database.models import Recipe, User, ShoppingList
 
 @pytest.fixture(scope='module')
 def test_client():
@@ -12,7 +12,6 @@ def test_client():
     ctx.push()
     yield test_client
     ctx.pop()
-
 
 @pytest.fixture(scope='module')
 def init_database():
@@ -94,6 +93,26 @@ def add_recipe(test_client, retrieve_auth_token, init_database):
     return dict_res['id']
 
 @pytest.fixture(scope='module')
+def add_shopping_list(test_client, retrieve_auth_token, init_database, add_recipe):
+    headers = {
+        'Authorization': 'Bearer {}'.format(retrieve_auth_token),
+        'Content-Type': 'application/json'
+    }
+
+    test_data = {
+        'name':'Main List',
+        'added_recipes':[],
+        'ingredients': []
+    }
+
+    response = test_client.post('/api/shopping-list', headers=headers, data=json.dumps(test_data))
+    
+    assert response.status_code == 201
+    dict_res = json.loads(response.data)
+    return dict_res['id']
+
+# Fixtures for unit testing below this line
+@pytest.fixture(scope='module')
 def new_user():
     test_user = User(
         email='jim@raynor.com', 
@@ -139,3 +158,14 @@ def new_recipe(new_user):
         created_by=new_user
     )
     return test_recipe
+
+@pytest.fixture(scope='module')
+def new_shopping_list(new_user, new_recipe):
+    test_shopping_list = ShoppingList(
+        owner = new_user,
+        name = 'Main List',
+        added_recipes = [new_recipe],
+        ingredients = ['Beef', 'Garlic']
+    )
+
+    return test_shopping_list
