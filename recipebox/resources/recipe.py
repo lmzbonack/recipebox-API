@@ -4,12 +4,11 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist,\
 ValidationError, InvalidQueryError
 
-from recipebox.database.models import Recipe, User
+from recipebox.database.models import Recipe, User, ShoppingList
 from recipebox.resources.errors import SchemaValidationError, RecipeAlreadyExistsError,\
 InternalServerError, UpdatingRecipeError, DeletingRecipeError, RecipeDoesNotExistError   
 
 class RecipesApi(Resource):
-
     @jwt_required
     def get(self):
         recipes = Recipe.objects().to_json()
@@ -21,7 +20,7 @@ class RecipesApi(Resource):
             user_id = get_jwt_identity()
             body = request.get_json()
             user = User.objects.get(id=user_id)
-            recipe =  Recipe(**body, created_by=user).save()
+            recipe = Recipe(**body, created_by=user).save()
             user.update(push__authored_recipes=recipe)
             user.save()
             id = recipe.id
@@ -37,8 +36,8 @@ class RecipesApi(Resource):
 class RecipeApi(Resource):
     def get(self, id):
         try:
-            recipes = Recipe.objects.get(id=id).to_json()
-            return Response(recipes, mimetype="application/json", status=200)
+            recipe = Recipe.objects.get(id=id).to_json()
+            return Response(recipe, mimetype="application/json", status=200)
         except DoesNotExist:
             raise RecipeDoesNotExistError
         except Exception as e:
@@ -52,7 +51,8 @@ class RecipeApi(Resource):
             recipe = Recipe.objects.get(id=id, created_by=user_id)
             body = request.get_json()
             Recipe.objects.get(id=id).update(**body)
-            return '', 200
+            recipe = Recipe.objects.get(id=id, created_by=user_id).to_json()
+            return Response(recipe, mimetype="application/json", status=200)
         except InvalidQueryError:
             raise SchemaValidationError
         except DoesNotExist:
@@ -108,3 +108,4 @@ class StarApi(Resource):
         except Exception as e:
             print(e)
             raise InternalServerError
+
