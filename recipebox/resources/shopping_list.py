@@ -66,8 +66,6 @@ class ShoppingListApi(Resource):
             print(e)
             raise InternalServerError
 
-# New pair class with a Post, Put, and Delete Methods to add recipe(s) to Shopping List
-# Take in 2 ids to do this: The recipe id and the shopping cart id. Check ownership of the cart. Do not care about ownership of the recipe
 class ShoppingListsRecipeAppenderApi(Resource):
     @jwt_required
     def post(self):
@@ -132,7 +130,7 @@ class ShoppingListRecipeAppenderApi(Resource):
         except InvalidQueryError:
             raise SchemaValidationError
         except DoesNotExist:
-            raise ShoppingListDoesNotExistError
+            raise DeletingShoppingListError
         except Exception as e:
             print(e)
             raise InternalServerError
