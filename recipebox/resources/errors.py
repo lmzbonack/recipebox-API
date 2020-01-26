@@ -28,6 +28,18 @@ class DeletingRecipeError(Exception):
 class RecipeDoesNotExistError(Exception):
     pass
 
+class ScrapingManifestAlreadyExistsError(Exception):
+    pass
+
+class UpdatingScrapingManifestError(Exception):
+    pass
+
+class DeletingScrapingManifestError(Exception):
+    pass
+
+class ScrapingManifestDoesNotExistError(Exception):
+    pass
+
 class EmailAlreadyExistsError(Exception):
     pass
 
@@ -57,6 +69,22 @@ errors = {
     },
     "RecipeDoesNotExistError": {
         "message": "Recipe with given id doesn't exists",
+        "status": 400
+    },
+    "ScrapingManifestAlreadyExistsError": {
+        "message": "Scraping Manifest with given name already exists",
+        "status": 400
+    },
+    "ScrapingManifestRecipeError": {
+        "message": "Updating Scraping Manifest added by other is forbidden",
+        "status": 403
+    },
+    "DeletingScrapingManifestError": {
+        "message": "Deleting Scraping Manifest added by other is forbidden",
+        "status": 403
+    },
+    "ScrapingManifestDoesNotExistError": {
+        "message": "Scraping Manifest with given id doesn't exists",
         "status": 400
     },
     "EmailAlreadyExistsError": {
