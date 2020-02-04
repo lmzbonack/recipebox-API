@@ -4,18 +4,31 @@ from flask_mongoengine import MongoEngine
 db = MongoEngine()
 
 class Recipe(db.Document):
+    created_by = db.ReferenceField('User')
     name = db.StringField(required=True, unique=True)
     author = db.StringField(required=True)
     prep_time = db.IntField()
     cook_time = db.IntField()
     ingredients = db.ListField(db.StringField(), required=True)
     instructions = db.ListField(db.StringField(), required=True)
+
+# validate domain field so it is in this format
+# www.budgetbytes.com
+class ScrapingManifest(db.Document):
     created_by = db.ReferenceField('User')
+    domain = db.StringField(required=True, unique=True)
+    name_path = db.StringField(required=True)
+    author_path = db.StringField(required=True)
+    prep_time_path = db.ListField(db.StringField())
+    cook_time_path = db.ListField(db.StringField())
+    ingredients_path = db.StringField(required=True)
+    instructions_path = db.StringField(required=True)
 
 class User(db.Document):
     email = db.EmailField(required=True, unique=True)
     password = db.StringField(required=True, min_length=6)
     authored_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.PULL))
+    authored_scraping_manifests = db.ListField(db.ReferenceField('ScrapingManifest', reverse_delete_rule=db.PULL))
     starred_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.DO_NOTHING))
 
     def hash_password(self):
@@ -31,3 +44,5 @@ class ShoppingList(db.Document):
     name = db.StringField(required=True)
     added_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.DO_NOTHING))
     ingredients = db.ListField(db.StringField())
+
+
