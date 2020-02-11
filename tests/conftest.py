@@ -1,7 +1,7 @@
 import pytest, json
 from pymongo import MongoClient
 
-from recipebox import create_app
+from recipebox.factory import create_app
 from recipebox.database.models import Recipe, User, ShoppingList
 
 @pytest.fixture(scope='module')

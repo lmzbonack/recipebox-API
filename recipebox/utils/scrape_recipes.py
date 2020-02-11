@@ -5,6 +5,7 @@ import time
 from bs4 import BeautifulSoup
 from mongoengine.errors import DoesNotExist
 
+from recipebox import celery
 from recipebox.database.models import ScrapingManifest
 from recipebox.resources.errors import InternalServerError, ScrapingManifestDoesNotExistError   
 
@@ -136,6 +137,7 @@ class RecipeBoxScraper:
         else:
             return 'Could not find instructions'
 
+    @celery.task()
     def scrape_everything(self, url):
         manifest_result = self.retrieve_scraping_manifest(url) 
         
