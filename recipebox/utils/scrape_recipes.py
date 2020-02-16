@@ -1,6 +1,7 @@
 """Create a generic class that given a url to a page that contains a recipe will return instructions, ingredients, etc"""
 import requests
 import time
+import json
 
 from bs4 import BeautifulSoup
 from mongoengine.errors import DoesNotExist
@@ -36,9 +37,8 @@ class RecipeBoxScraper:
         }
 
     def retrieve_scraping_manifest(self, recipe_url):
-        print(recipe_url)
         if recipe_url[0:4] != 'http':
-            return 'Please provide the full path'
+            return 'Please provide the full path for example https://www.budgetytes.com/easy-cilantro-lime-chicken'
         try:
             recipe_list = recipe_url.split('/')
             smanifest = ScrapingManifest.objects.get(domain=recipe_list[2])
@@ -53,7 +53,7 @@ class RecipeBoxScraper:
     def retrieve_url(self, recipe_url):
         recipe_index = requests.get(recipe_url)
         if recipe_index.status_code != 200:
-            return 'Url could not be retrieved'
+            return 'Url could not be retrieved. Are you sure that site exists?'
         else:
             self.retrieved_data['url'] = recipe_url
             self.soup = BeautifulSoup(recipe_index.content, 'html.parser')
@@ -137,12 +137,16 @@ class RecipeBoxScraper:
         else:
             return 'Could not find instructions'
 
-    @celery.task()
     def scrape_everything(self, url):
-        manifest_result = self.retrieve_scraping_manifest(url) 
+        try:
+            manifest_result = self.retrieve_scraping_manifest(url)
         
-        if manifest_result == 'Please provide the full path':
+        except ScrapingManifestDoesNotExistError:
+            return 'Right now we don\'t know how to scrape that site. Sorry about that :('
+        
+        if manifest_result == 'Please provide the full path for example https://www.budgetytes.com/easy-cilantro-lime-chicken':
             return manifest_result
+
         url_result = self.retrieve_url(url)
         
         if url_result != 'Url Retrieved':
@@ -159,5 +163,5 @@ class RecipeBoxScraper:
         
         self.scrape_ingredients(self.mapping['ingredients_path'])
         self.scrape_instructions(self.mapping['instructions_path'])
-        return self.retrieved_data
+        return json.dumps(self.retrieved_data)
 
