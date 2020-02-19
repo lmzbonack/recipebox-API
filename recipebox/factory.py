@@ -5,6 +5,7 @@ from flask_restful import Api
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_mongoengine import MongoEngine
+from flask_cors import CORS
 
 from recipebox.database.db import initialize_db
 from recipebox.resources.routes import initialize_routes
@@ -29,3 +30,4 @@ def initialize_extensions(app):
     jwt.init_app(app)
     db.init_app(app)
     init_celery(app, celery)
+    CORS(app)
