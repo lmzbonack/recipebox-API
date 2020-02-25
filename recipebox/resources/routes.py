@@ -1,6 +1,7 @@
 from recipebox.resources.recipe import RecipesApi, RecipeApi, StarApi
 from recipebox.resources.scraping import ScrapingApi
-from recipebox.resources.users import UserApi
+from recipebox.resources.users import UserApiCreatedRecipes, UserApiCreatedScrapingManifests, \
+UserApiShoppingList, UserApiStarredRecipes
 from recipebox.resources.shopping_list import ShoppingListApi, ShoppingListsApi,\
 ShoppingListsRecipeAppenderApi, ShoppingListRecipeAppenderApi
 from recipebox.resources.auth import SignupApi, LoginApi
@@ -21,5 +22,8 @@ def initialize_routes(api):
     api.add_resource(ScrapingManifestsApi, '/api/scraping-manifest')
     api.add_resource(ScrapingManifestApi, '/api/scraping-manifest/<id>')
     api.add_resource(ScrapingApi, '/api/scrape')
-    api.add_resource(UserApi, '/api/user')
+    api.add_resource(UserApiCreatedRecipes, '/api/user/created-recipes')
+    api.add_resource(UserApiCreatedScrapingManifests, '/api/user/created-manifests')
+    api.add_resource(UserApiShoppingList, '/api/user/shopping-list')
+    api.add_resource(UserApiStarredRecipes, '/api/user/starred-recipes')
 
