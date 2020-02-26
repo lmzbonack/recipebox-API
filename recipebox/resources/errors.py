@@ -1,4 +1,5 @@
 class InternalServerError(Exception):
+    print(Exception)
     pass
 
 class ShoppingListAlreadyExistsError(Exception):
