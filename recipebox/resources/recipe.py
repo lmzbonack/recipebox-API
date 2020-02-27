@@ -80,7 +80,7 @@ class StarApi(Resource):
         try:
             user_id = get_jwt_identity()
             user = User.objects.get(id=user_id)
-            recipe = Recipe.objects.get(id=id, created_by=user_id)
+            recipe = Recipe.objects.get(id=id)
             if recipe not in user.starred_recipes:
                 user.update(push__starred_recipes=recipe)
                 return '', 200
@@ -97,7 +97,7 @@ class StarApi(Resource):
         try:
             user_id = get_jwt_identity()
             user = User.objects.get(id=user_id)
-            recipe = Recipe.objects.get(id=id, created_by=user_id)
+            recipe = Recipe.objects.get(id=id)
             if recipe in user.starred_recipes:
                 user.update(pull__starred_recipes=recipe)
                 return '', 200
