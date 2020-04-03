@@ -48,7 +48,7 @@ class UserApiStarredRecipes(Resource):
             ids = []
             for recipe in result:
                 ids.append(recipe.id)
-            result = Recipe.objects(id in ids)
+            result = Recipe.objects(id__in=ids)
             return Response(result.to_json(), mimetype="application/json", status=200)
         except Exception as e:
             print(e)
