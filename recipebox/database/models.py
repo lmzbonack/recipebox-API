@@ -1,16 +1,27 @@
+import datetime
+
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_mongoengine import MongoEngine
+from mongoengine import signals
 
 db = MongoEngine()
 
 class Recipe(db.Document):
+    created = db.DateTimeField(required=True, default=datetime.datetime.utcnow)
+    modified = db.DateTimeField()
     created_by = db.ReferenceField('User')
     name = db.StringField(required=True, unique=True)
     author = db.StringField(required=True)
+    external_link = db.StringField(),
     prep_time = db.IntField()
     cook_time = db.IntField()
     ingredients = db.ListField(db.StringField(), required=True)
     instructions = db.ListField(db.StringField(), required=True)
+
+    @classmethod
+    def update_timestamp(cls, sender, document, **kwargs):
+        print('Signal Fired')
+        document.modified = datetime.datetime.utcnow()
 
 # validate domain field so it is in this format
 # www.budgetbytes.com
@@ -45,4 +56,4 @@ class ShoppingList(db.Document):
     added_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.DO_NOTHING))
     ingredients = db.ListField(db.StringField())
 
-
+signals.post_save.connect(Recipe.update_timestamp, sender=Recipe)
