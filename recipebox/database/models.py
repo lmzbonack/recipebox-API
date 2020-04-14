@@ -12,7 +12,7 @@ class Recipe(db.Document):
     created_by = db.ReferenceField('User')
     name = db.StringField(required=True, unique=True)
     author = db.StringField(required=True)
-    external_link = db.StringField(),
+    external_link = db.StringField()
     prep_time = db.IntField()
     cook_time = db.IntField()
     ingredients = db.ListField(db.StringField(), required=True)

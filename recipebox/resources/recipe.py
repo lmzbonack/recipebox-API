@@ -19,6 +19,7 @@ class RecipesApi(Resource):
         try:
             user_id = get_jwt_identity()
             body = request.get_json()
+            print(body)
             user = User.objects.get(id=user_id)
             recipe = Recipe(**body, created_by=user).save()
             user.update(push__authored_recipes=recipe)
