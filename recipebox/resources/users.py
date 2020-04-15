@@ -1,9 +1,30 @@
-from flask import Blueprint, Response, request
+from flask import Blueprint, Response, request, jsonify
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from recipebox.database.models import User, Recipe, ScrapingManifest, ShoppingList
 from recipebox.resources.errors import InternalServerError
+
+
+# list_numbers = [1, 2, 3, 4]
+# map_iterator = map(lambda x: x * 2, list_numbers)
+# print_iterator(map_iterator)
+# [f(x) for x in iterable]
+class UserApiOverview(Resource):
+    @jwt_required
+    def get(self):
+        try:
+            user_id = get_jwt_identity()
+            user = User.objects(id=user_id)
+            aggregate = {}
+            aggregate['id'] = str(user.first().id)
+            aggregate['starred_recipes'] = [ str(val.id) for val in user.first().starred_recipes]
+            aggregate['authored_recipes'] = [ str(val.id) for val in user.first().authored_recipes]
+            aggregate['authored_scraping_manifests'] = [ str(val.id) for val in user.first().authored_scraping_manifests]
+            return jsonify(aggregate)
+        except Exception as e:
+            print(e)
+            raise InternalServerError
 
 class UserApiCreatedRecipes(Resource):
     @jwt_required
@@ -44,12 +65,14 @@ class UserApiStarredRecipes(Resource):
         try:
             user_id = get_jwt_identity()
             user = User.objects(id=user_id)
-            result = user.first().starred_recipes
-            ids = []
-            for recipe in result:
-                ids.append(recipe.id)
-            result = Recipe.objects(id__in=ids)
-            return Response(result.to_json(), mimetype="application/json", status=200)
+            starred_recipes = [ val for val in user.first().starred_recipes ]
+            # result = user.first().starred_recipes
+            # ids = []
+            # for recipe in result:
+            #     ids.append(recipe.id)
+            # result = Recipe.objects(id__in=ids)
+            # return Response(result.to_json(), mimetype="application/json", status=200)
+            return jsonify(starred_recipes)
         except Exception as e:
             print(e)
             raise InternalServerError
