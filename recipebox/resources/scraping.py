@@ -3,10 +3,11 @@ from flask_restful import Resource
 from flask_jwt_extended import jwt_required
 
 from recipebox.utils.scrape_recipes import RecipeBoxScraper
+from recipebox.resources.errors import InternalServerError
 
 class ScrapingApi(Resource):
     @jwt_required
-    def get(self):
+    def post(self):
         RBS = RecipeBoxScraper()
         try:
             body = request.get_json()
@@ -19,5 +20,3 @@ class ScrapingApi(Resource):
         except Exception as e:
             return e, 500
             raise InternalServerError
-
-            

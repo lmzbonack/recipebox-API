@@ -8,7 +8,7 @@ from mongoengine.errors import DoesNotExist
 
 from recipebox import celery
 from recipebox.database.models import ScrapingManifest
-from recipebox.resources.errors import InternalServerError, ScrapingManifestDoesNotExistError   
+from recipebox.resources.errors import InternalServerError, ScrapingManifestDoesNotExistError
 
 class RecipeBoxScraper:
     """Generic Scraper that will retrieve what it can and send back a comprehensive response"""
@@ -48,7 +48,7 @@ class RecipeBoxScraper:
             raise ScrapingManifestDoesNotExistError
         except Exception as e:
             print(e)
-            raise InternalServerError  
+            raise InternalServerError
 
     def retrieve_url(self, recipe_url):
         recipe_index = requests.get(recipe_url)

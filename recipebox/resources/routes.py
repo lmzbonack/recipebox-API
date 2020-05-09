@@ -27,4 +27,3 @@ def initialize_routes(api):
     api.add_resource(UserApiCreatedScrapingManifests, '/api/user/created-manifests')
     api.add_resource(UserApiShoppingList, '/api/user/shopping-list')
     api.add_resource(UserApiStarredRecipes, '/api/user/starred-recipes')
-
