@@ -1,13 +1,14 @@
-from flask import Blueprint, Response, request
+from flask import Response, request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist,\
-ValidationError, InvalidQueryError
+from mongoengine.errors import DoesNotExist, FieldDoesNotExist, \
+                               InvalidQueryError, ValidationError
 
 from recipebox.database.models import Recipe, User, ShoppingList
 from recipebox.resources.errors import SchemaValidationError, ShoppingListAlreadyExistsError,\
 InternalServerError, UpdatingShoppingListError, DeletingShoppingListError, ShoppingListDoesNotExistError,\
 RecipeDoesNotExistError
+
 
 class ShoppingListsApi(Resource):
     @jwt_required
@@ -24,6 +25,7 @@ class ShoppingListsApi(Resource):
         except Exception as e:
             print(e)
             raise InternalServerError
+
 
 class ShoppingListApi(Resource):
     def get(self, id):
@@ -42,7 +44,7 @@ class ShoppingListApi(Resource):
             user_id = get_jwt_identity()
             slist = ShoppingList.objects.get(id=id, owner=user_id)
             body = request.get_json()
-            result = ShoppingList.objects.get(id=id).update(**body)
+            ShoppingList.objects.get(id=id).update(**body)
             slist = ShoppingList.objects.get(id=id, owner=user_id).to_json()
             return Response(slist, mimetype="application/json", status=200)
         except InvalidQueryError:
@@ -65,6 +67,7 @@ class ShoppingListApi(Resource):
         except Exception as e:
             print(e)
             raise InternalServerError
+
 
 class ShoppingListsRecipeAppenderApi(Resource):
     @jwt_required
@@ -89,6 +92,7 @@ class ShoppingListsRecipeAppenderApi(Resource):
         except Exception as e:
             print(e)
             raise InternalServerError
+
 
 class ShoppingListRecipeAppenderApi(Resource):
     @jwt_required

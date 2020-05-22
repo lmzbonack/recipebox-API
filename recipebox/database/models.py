@@ -26,7 +26,6 @@ def _validate_recipe_url(val):
 
 class Recipe(db.Document):
     created = db.DateTimeField(required=True, default=datetime.datetime.utcnow)
-    modified = db.DateTimeField()
     created_by = db.ReferenceField('User')
     name = db.StringField(required=True, unique=True)
     author = db.StringField(required=True)
@@ -38,15 +37,11 @@ class Recipe(db.Document):
     ingredients = db.ListField(db.StringField(), required=True)
     instructions = db.ListField(db.StringField(), required=True)
 
-    @classmethod
-    def update_timestamp(cls, sender, document, **kwargs):
-        print('Signal Fired')
-        document.modified = datetime.datetime.utcnow()
-
 
 # validate domain field so it is in this format
 # www.budgetbytes.com
 class ScrapingManifest(db.Document):
+    created = db.DateTimeField(required=True, default=datetime.datetime.utcnow)
     created_by = db.ReferenceField('User')
     domain = db.StringField(required=True,
                             unique=True,
@@ -60,11 +55,12 @@ class ScrapingManifest(db.Document):
 
 
 class User(db.Document):
+    created = db.DateTimeField(required=True, default=datetime.datetime.utcnow)
     email = db.EmailField(required=True, unique=True)
     password = db.StringField(required=True, min_length=6)
     authored_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.PULL))
     authored_scraping_manifests = db.ListField(db.ReferenceField('ScrapingManifest', reverse_delete_rule=db.PULL))
-    starred_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.DO_NOTHING))
+    starred_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.PULL))
 
     def hash_password(self):
         self.password = generate_password_hash(self.password).decode('utf8')
@@ -77,10 +73,8 @@ User.register_delete_rule(Recipe, 'added_by', db.CASCADE)
 
 
 class ShoppingList(db.Document):
+    created = db.DateTimeField(required=True, default=datetime.datetime.utcnow)
     owner = db.ReferenceField('User')
     name = db.StringField(required=True)
-    added_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.DO_NOTHING))
+    added_recipes = db.ListField(db.ReferenceField('Recipe', reverse_delete_rule=db.PULL))
     ingredients = db.ListField(db.StringField())
-
-
-signals.post_save.connect(Recipe.update_timestamp, sender=Recipe)
