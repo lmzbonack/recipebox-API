@@ -1,25 +1,31 @@
-from flask import Blueprint, Response, request
+import json
+
+from flask import Response, request, jsonify
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist,\
+from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, \
 ValidationError, InvalidQueryError
 
-from recipebox.database.models import Recipe, User, ShoppingList
-from recipebox.resources.errors import SchemaValidationError, RecipeAlreadyExistsError,\
+from recipebox.database.models import Recipe, User
+from recipebox.resources.errors import SchemaValidationError, RecipeAlreadyExistsError, \
 InternalServerError, UpdatingRecipeError, DeletingRecipeError, RecipeDoesNotExistError   
+
 
 class RecipesApi(Resource):
     @jwt_required
     def get(self):
-        recipes = Recipe.objects().to_json()
-        return Response(recipes, mimetype="application/json", status=200)
+        # Intelligently check request to see if they are requesting a page that
+        # exists if they are not send back an error message that makes sense
+        page = request.args.get('page')
+        recipes = Recipe.objects.order_by('-created').paginate(page=int(page), per_page=25)
+        recipes_result = [json.loads(item.to_json()) for item in recipes.items]
+        return jsonify(recipes_result)
 
     @jwt_required
     def post(self):
         try:
             user_id = get_jwt_identity()
             body = request.get_json()
-            print(body)
             user = User.objects.get(id=user_id)
             recipe = Recipe(**body, created_by=user).save()
             user.update(push__authored_recipes=recipe)
@@ -33,7 +39,8 @@ class RecipesApi(Resource):
         except Exception as e:
             print(e)
             raise InternalServerError
-        
+
+
 class RecipeApi(Resource):
     def get(self, id):
         try:
@@ -44,7 +51,7 @@ class RecipeApi(Resource):
         except Exception as e:
             print(e)
             raise InternalServerError
-    
+
     @jwt_required
     def put(self, id):
         try:
@@ -61,7 +68,7 @@ class RecipeApi(Resource):
         except Exception as e:
             print(e)
             raise InternalServerError
-    
+
     @jwt_required
     def delete(self, id):
         try:
@@ -74,6 +81,7 @@ class RecipeApi(Resource):
         except Exception as e:
             print(e)
             raise InternalServerError
+
 
 class StarApi(Resource):
     @jwt_required
@@ -109,4 +117,3 @@ class StarApi(Resource):
         except Exception as e:
             print(e)
             raise InternalServerError
-

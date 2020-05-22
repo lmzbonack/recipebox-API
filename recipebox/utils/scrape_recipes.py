@@ -124,7 +124,7 @@ class RecipeBoxScraper:
             return ingredients_list
         else:
             return 'Could not find ingredients'
-    
+
     def scrape_instructions(self, instructions_path):
         instructions = self.soup.find(class_ = instructions_path).children
         if instructions is not None:
@@ -140,28 +140,27 @@ class RecipeBoxScraper:
     def scrape_everything(self, url):
         try:
             manifest_result = self.retrieve_scraping_manifest(url)
-        
+
         except ScrapingManifestDoesNotExistError:
             return 'Right now we don\'t know how to scrape that site. Sorry about that :('
-        
+
         if manifest_result == 'Please provide the full path for example https://www.budgetytes.com/easy-cilantro-lime-chicken':
             return manifest_result
 
         url_result = self.retrieve_url(url)
-        
+
         if url_result != 'Url Retrieved':
             return url_result
-        
+
         self.scrape_name(self.mapping['name_path'])
         self.scrape_author(self.mapping['author_path'])
-        
+
         if len(self.mapping['prep_time_path']) != 0:
             self.scrape_prep_time(self.mapping['prep_time_path'][0], self.mapping['prep_time_path'][1])
-        
+
         if len(self.mapping['cook_time_path']) != 0:
             self.scrape_cook_time(self.mapping['cook_time_path'][0], self.mapping['cook_time_path'][1])
-        
+
         self.scrape_ingredients(self.mapping['ingredients_path'])
         self.scrape_instructions(self.mapping['instructions_path'])
         return json.dumps(self.retrieved_data)
-

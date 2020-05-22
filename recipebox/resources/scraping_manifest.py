@@ -1,8 +1,10 @@
-from flask import Blueprint, Response, request
+import json
+
+from flask import Response, request, jsonify
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist,\
-ValidationError, InvalidQueryError
+from mongoengine.errors import FieldDoesNotExist, NotUniqueError, \
+                               DoesNotExist, ValidationError, InvalidQueryError
 
 from recipebox.database.models import ScrapingManifest, User
 from recipebox.resources.errors import SchemaValidationError, ScrapingManifestAlreadyExistsError,\
@@ -11,8 +13,12 @@ InternalServerError, UpdatingScrapingManifestError, DeletingScrapingManifestErro
 class ScrapingManifestsApi(Resource):
     @jwt_required
     def get(self):
-        smanifest = ScrapingManifest.objects().to_json()
-        return Response(smanifest, mimetype="application/json", status=200)
+        # Intelligently check request to see if they are requesting a page that
+        # exists if they are not send back an error message that makes sense
+        page = request.args.get('page')
+        smanifest = ScrapingManifest.objects.order_by('-created').paginate(page=int(page), per_page=25)
+        smanifest_result = [json.loads(item.to_json()) for item in smanifest.items]
+        return jsonify(smanifest_result)
 
     @jwt_required
     def post(self):
