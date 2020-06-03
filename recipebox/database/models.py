@@ -37,6 +37,12 @@ class Recipe(db.Document):
     ingredients = db.ListField(db.StringField(), required=True)
     instructions = db.ListField(db.StringField(), required=True)
 
+    meta = {'indexes': [
+        {'fields': ['$name', '$ingredients', '$external_link', '$author'],
+         'default_language': 'english',
+         'weights': {'name': 10, 'ingredients': 10, 'external_link': 5, 'author': 5}
+        }
+    ]}
 
 # validate domain field so it is in this format
 # www.budgetbytes.com
