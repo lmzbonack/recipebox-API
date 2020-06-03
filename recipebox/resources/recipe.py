@@ -117,3 +117,10 @@ class StarApi(Resource):
         except Exception as e:
             print(e)
             raise InternalServerError
+
+class SearchApi(Resource):
+    @jwt_required
+    def get(self):
+        query = request.args.get('query')
+        recipes = Recipe.objects.search_text(query).limit(5).order_by('$text_score')
+        return jsonify(recipes)
