@@ -23,6 +23,7 @@ def create_app(config_filename=None):
     api = Api(app, errors=errors)
     initialize_routes(api)
     initialize_extensions(app)
+    print('App created')
     return app
 
 def initialize_extensions(app):
