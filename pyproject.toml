@@ -20,6 +20,7 @@ requests = "^2.22.0"
 celery = "^4.4.0"
 flask-cors = "^3.0.8"
 blinker = "^1.4"
+gunicorn = "^20.0.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
