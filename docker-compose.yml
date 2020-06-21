@@ -1,11 +1,47 @@
 version: '3'
+
 services:
-  flask:
+  traefik:
+    container_name: traefik
+    image: "traefik:v2.2"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    networks:
+      - proxy
+      - default
+    environment:
+      DOMAIN: recipebox.dev
+    env_file:
+      - instance/.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - ./traefik/traefik.toml:/etc/traefik/traefik.toml:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/acme/acme.json:/etc/traefik/acme/acme.json
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.traefik.tls.certresolver=lets-encr"
+      - "traefik.http.routers.traefik.tls.domains[0].main=*.${DOMAIN}"
+      - "traefik.http.routers.traefik.tls.domains[0].sans=${DOMAIN}"
+      ## HTTP REDIRECT
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.redirect-https.rule=hostregexp(`{host:.+}`)"  
+      - "traefik.http.routers.redirect-https.entrypoints=web"
+      - "traefik.http.routers.redirect-https.middlewares=redirect-to-https"
+
+  recipebox:
     container_name: recipebox
     build:
       context: .
       dockerfile: ./setup/docker/Dockerfile
     environment:
+      DOMAIN: recipebox.dev
       FLASK_ENV: dev
       MONGODB_DATABASE: recipebox
       MONGODB_HOSTNAME: mongodb
@@ -13,19 +49,31 @@ services:
       - instance/.env
     ports:
       - "5000:5000"
-    command: "gunicorn -b 0.0.0.0:5000 --log-level=debug --reload recipebox.app:app"
+    networks:
+      - proxy
+      - default
+    command: "gunicorn -b 0.0.0.0:5000 --reload recipebox.app:app"
     volumes:
       - "./recipebox:/app/app"
       - "./tests:/app/tests"
       - "./instance:/app/instance"
     depends_on:
       - mongodb
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.recipebox.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.recipebox.entrypoints=websecure"
+      - "traefik.http.routers.recipebox.tls.certresolver=lets-encr"
+      - "traefik.http.services.recipebox.loadbalancer.server.port=5000"
+      - "traefik.docker.network=proxy"
   
   mongodb:
     image: mongo:4.2.0
     container_name: mongodb
     restart: unless-stopped
     command: mongod --auth
+    networks:
+      - default
     environment:
       MONGODB_DATA_DIR: /data/db
       MONDODB_LOG_DIR: /dev/null
@@ -37,3 +85,9 @@ services:
 
 volumes:
   mongodbdata:
+
+networks:
+  proxy:
+    external: true
+  default:
+    driver: bridge
