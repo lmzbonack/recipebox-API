@@ -34,4 +34,4 @@ COPY . .
 # ENTRYPOINT ["/app/setup/scripts/entrypoint.sh"]
 EXPOSE 5000
 # Run the server
-CMD ["gunicorn", "-b 0.0.0.0:5000", "--timeout=120", "--workers=3", "recipebox.app:app"]
+CMD ["gunicorn", "-b 0.0.0.0:5000", "--reload", "recipebox.app:app"]
