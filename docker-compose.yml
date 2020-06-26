@@ -59,7 +59,6 @@ services:
       dockerfile: ./setup/docker/Dockerfile
     environment:
       DOMAIN: recipebox.dev
-      FLASK_ENV: prod
       MONGODB_DATABASE: recipebox
       MONGODB_HOSTNAME: mongodb
     env_file:
@@ -69,7 +68,7 @@ services:
     networks:
       - proxy
       - default
-    command: "gunicorn -b 0.0.0.0:5000 --reload recipebox.app:app"
+    command: "gunicorn -b 0.0.0.0:5000 --reload --capture-output --log-level debug recipebox.app:app"
     volumes:
       - "./recipebox:/app/app"
       - "./tests:/app/tests"

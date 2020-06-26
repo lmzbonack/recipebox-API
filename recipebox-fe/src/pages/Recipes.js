@@ -141,7 +141,10 @@ export default class Recipes extends React.Component {
 
   componentDidMount() {
     this.retrieveRecipes()
-    this.retrieveUserDetails()
+    // This allows the page to be viewable without logging in
+    if (localStorage.getItem('authToken')) {
+      this.retrieveUserDetails()
+    }
   }
 
   onGridReady = params => {
@@ -154,6 +157,7 @@ export default class Recipes extends React.Component {
   }
 
   render() {
+    let isloggedIn = localStorage.getItem('authToken')
     const { open } = this.state
     return (
       <Container className='mt-3'>
@@ -179,7 +183,7 @@ export default class Recipes extends React.Component {
                open={open}
                toggle={this.toggleModal}>
           <DynamicModalHeader recipe={this.state.activeRecipe}
-                              userData={this.state.userData}/>
+                              userData={this.state.userData || { authored_recipes:[], starred_recipes:[] }}/>
           <ModalBody style={{
               "overflowY": "auto",
               "height": "65vh"

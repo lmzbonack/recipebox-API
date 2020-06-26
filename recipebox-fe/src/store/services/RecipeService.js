@@ -40,19 +40,10 @@ export default {
     }
   },
   /**
-   * Retrieves all recipes
+   * Retrieves all recipes no auth token needed
    */
   async fetchAll(page) {
-    let token = await utils.retrieveAuthToken()
-    if (token) {
-      const config = {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-      return axios.get(`${process.env.REACT_APP_API_URL}/recipes?page=${page}`, config)
-    } else {
-      navigate('/login')
-      return 'No Token'
-    }
+      return axios.get(`${process.env.REACT_APP_API_URL}/recipes?page=${page}`)
   },
   /**
    * Updates a single recipe
@@ -124,15 +115,6 @@ export default {
    * @param {string} query the thing to be searched
    */
   async search(query) {
-    let token = await utils.retrieveAuthToken()
-    if (token) {
-      const config = {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-      return axios.get(`${process.env.REACT_APP_API_URL}/recipes/search?query=${query}`, config)
-    } else {
-      navigate('/login')
-      return 'No Token'
-    }
+    return axios.get(`${process.env.REACT_APP_API_URL}/recipes/search?query=${query}`)
   }
 }

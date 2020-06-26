@@ -21,6 +21,7 @@ celery = "^4.4.0"
 flask-cors = "^3.0.8"
 blinker = "^1.4"
 gunicorn = "^20.0.4"
+flask-mail = "^0.9.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

@@ -6,7 +6,7 @@ from recipebox.database.models import Recipe, User, ShoppingList
 
 @pytest.fixture(scope='module')
 def test_client():
-    flask_app = create_app('flask_test.cfg')
+    flask_app = create_app('test.cfg')
     test_client = flask_app.test_client()
     ctx = flask_app.app_context()
     ctx.push()

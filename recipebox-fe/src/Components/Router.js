@@ -3,6 +3,9 @@ import { Router } from "@reach/router"
 
 import CreatedRecipes from '../pages/CreatedRecipes'
 import Login from '../pages/Login'
+import SignUp from '../pages/SignUp'
+import Reset from '../pages/Reset'
+import NewPassword from '../pages/NewPassword'
 import Recipes from '../pages/Recipes'
 import ScrapingManifests from '../pages/ScrapingManifests'
 import Search from '../pages/Search'
@@ -10,13 +13,11 @@ import StarredRecipes from '../pages/StarredRecipes'
 import ShoppingListEdit from '../pages/ShoppingListEdit'
 import ShoppingListDisplay from '../pages/ShoppingListDisplay'
 import ShoppingListView from '../pages/ShoppingListView'
-import SignUp from '../pages/SignUp'
 
 
 function ExportRouter(props){
   return (
     <Router>
-      {/* Maybe set this up to Redirect instead */}
       <Recipes path="/"/>
       <Recipes path="/recipes"/>
       <Search path="/search"/>
@@ -28,6 +29,8 @@ function ExportRouter(props){
       <ScrapingManifests path="created-manifests"/>
       <Login path="/login"/>
       <SignUp path="/signup"/>
+      <Reset path="/reset"/>
+      <NewPassword path='/reset/:token'/>
     </Router>
   )
 }

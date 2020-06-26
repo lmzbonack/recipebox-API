@@ -1,12 +1,10 @@
 import datetime
 
 from flask_bcrypt import generate_password_hash, check_password_hash
-from flask_mongoengine import MongoEngine
 from mongoengine import signals
 from mongoengine.errors import ValidationError
 
-
-db = MongoEngine()
+from recipebox.extensions import db
 
 
 def _not_empty(val):

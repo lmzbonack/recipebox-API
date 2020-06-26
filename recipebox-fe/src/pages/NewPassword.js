@@ -11,18 +11,18 @@ import {
   FormGroup,
 } from 'shards-react'
 
-import UserService from '../store/services/UserService'
+import MessageService from '../store/services/MessageService'
 
-
-export default class Login extends React.Component {
+export default class NewPassword extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       email: '',
-      password: ''
+      password: '',
+      passwordConfirm: ''
     }
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.login = this.login.bind(this);
+    this.resetPw = this.resetPw.bind(this);
   }
 
   handleInputChange(event) {
@@ -37,7 +37,7 @@ export default class Login extends React.Component {
   componentDidMount() {
     const listener = event => {
       if (event.code === "Enter" || event.code === "NumpadEnter") {
-        this.login()
+        this.signUp()
       }
     };
     document.addEventListener("keydown", listener);
@@ -46,21 +46,16 @@ export default class Login extends React.Component {
     };
   }
 
-  async login() {
-    const now = new Date()
+  async resetPw() {
     const payload = {
-      email: this.state.email,
-      password: this.state.password
+      password: this.state.password,
+      reset_token: this.props.token
     }
     try {
-      let loginResponse = await UserService.login(payload)
-      if (loginResponse.status === 201) {
-        const localStoragePayload = {
-          token: loginResponse.data.token,
-          expiry: now.getTime() + 1000*60*60*24
-        }
-        localStorage.setItem('authToken', JSON.stringify(localStoragePayload))
-        navigate('/recipes')
+      let resetPwResponse = await MessageService.reset(payload)
+      if (resetPwResponse.status === 200) {
+        toast.success("Password has been reset. Redirecting you to login now")
+        navigate('/login')
       }
     } catch(error) {
       toast.error(error.response.data.message)
@@ -70,24 +65,20 @@ export default class Login extends React.Component {
   render() {
     return(
       <Container className='mt-3'>
-        <h2>Login</h2>
+        <h2>Reset Password</h2>
         <Form>
           <FormGroup>
-            <label htmlFor="#email">Email</label>
-            <FormInput name="email" placeholder="Email" value={this.state.email} onChange={this.handleInputChange}/>
+            <label htmlFor="#password">New Password</label>
+            <FormInput name="password" type="password" placeholder="New Password" value={this.state.password} onChange={this.handleInputChange} />
           </FormGroup>
           <FormGroup>
-            <label htmlFor="#password">Password</label>
-            <FormInput name="password" type="password" placeholder="Password" value={this.state.password} onChange={this.handleInputChange} />
+            <label htmlFor="#passwordConfirm">Confirm New Password</label>
+            <FormInput name="passwordConfirm" type="password" placeholder="Confirm New Password" value={this.state.passwordConfirm} onChange={this.handleInputChange} />
           </FormGroup>
         </Form>
         <Button theme="primary"
-                onClick={this.login}>Login
-        </Button>
-        <div className='mt-1'>
-          <a href="/reset">Forgot Password?</a>
-        </div>
-        <ToastContainer/>
+                onClick={this.resetPw}>Reset</Button>
+        <ToastContainer />
       </Container>
     )
   }

@@ -12,7 +12,6 @@ InternalServerError, UpdatingRecipeError, DeletingRecipeError, RecipeDoesNotExis
 
 
 class RecipesApi(Resource):
-    @jwt_required
     def get(self):
         # Intelligently check request to see if they are requesting a page that
         # exists if they are not send back an error message that makes sense
@@ -42,6 +41,7 @@ class RecipesApi(Resource):
 
 
 class RecipeApi(Resource):
+    @jwt_required
     def get(self, id):
         try:
             recipe = Recipe.objects.get(id=id).to_json()
@@ -119,7 +119,6 @@ class StarApi(Resource):
             raise InternalServerError
 
 class SearchApi(Resource):
-    @jwt_required
     def get(self):
         query = request.args.get('query')
         recipes = Recipe.objects.search_text(query).limit(5).order_by('$text_score')

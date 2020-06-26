@@ -80,7 +80,6 @@ export default class ShoppingListEdit extends React.Component {
           shoppingLists: shoppingListResponse.data,
         })
       }
-      console.log(this.state)
     } catch (error) {
         toast.error(error.response.data.message)
     }
