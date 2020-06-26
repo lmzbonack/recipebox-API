@@ -11,6 +11,7 @@ import { Button,
          ModalFooter,
          FormInput,
          Row,
+         Tooltip,
          Col } from 'shards-react'
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -55,7 +56,8 @@ export default class CreatedRecipes extends React.Component {
       },
       createdRecipes: null,
       userData: null,
-      page: 1
+      page: 1,
+      scrapingTooltipOpen: false,
     }
     this.displayToastNotification = this.displayToastNotification.bind(this)
     this.retrieveCreatedRecipes = this.retrieveCreatedRecipes.bind(this)
@@ -67,6 +69,7 @@ export default class CreatedRecipes extends React.Component {
     this.handleRecipesChange = this.handleRecipesChange.bind(this)
     this.handleQuickFilter = this.handleQuickFilter.bind(this)
     this.retrievedNextCreatedRecipesPage = this.retrievedNextCreatedRecipesPage.bind(this)
+    this.toggleScrapingTooltip = this.toggleScrapingTooltip.bind(this)
   }
 
   async retrieveCreatedRecipes() {
@@ -178,6 +181,12 @@ export default class CreatedRecipes extends React.Component {
     })
   }
 
+  toggleScrapingTooltip() {
+    this.setState({
+      scrapingTooltipOpen: !this.state.scrapingTooltipOpen
+    });
+  }
+
   closeModal(event) {
     this.setState({
       activeRecipe: undefined
@@ -238,14 +247,19 @@ export default class CreatedRecipes extends React.Component {
           </ModalBody>
           <ModalFooter>
             <ButtonGroup className='float-left'>
-              <Button theme='warning' className='ml-1' onClick={ () => { this.toggleNewModal() } }>
+              <Button theme='warning' className='ml-1' onClick={ () => { this.toggleNewModal() } }>Close
                 <FontAwesomeIcon className='ml-1' icon={faTimes} />
               </Button>
-              <Button theme='info' className='ml-1' onClick={ () => { this.scrapeRecipeChild() } }>
-                Scrape
+              <Tooltip open={this.state.scrapingTooltipOpen}
+                       target="#scrapingButton"
+                       toggle={this.toggleScrapingTooltip}>
+                Attempt to automatially retrieve the recipe specified at External Link and load it into the form.
+                This only works if a Scraping Manifest exists for the site you are trying to query.
+              </Tooltip>
+              <Button id='scrapingButton' theme='info' className='ml-1' onClick={ () => { this.scrapeRecipeChild() } }>Scrape
                 <FontAwesomeIcon className='ml-1' icon={faCaravan} />
               </Button>
-              <Button theme='primary' className='ml-1' onClick={ () => this.createRecipeChild() }>
+              <Button theme='primary' className='ml-1' onClick={ () => this.createRecipeChild() }>Save
                 <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
               </Button>
             </ButtonGroup>
@@ -273,19 +287,19 @@ export default class CreatedRecipes extends React.Component {
           </ModalBody>
           <ModalFooter>
             <ButtonGroup className='float-left'>
-              <Button id='deleteButton' theme='danger' className='ml-1' onClick={ () => { this.recipeDeleteChild() } }>
-                <FontAwesomeIcon className='ml-1' icon={faTrash} />
-              </Button>
-              <Button theme='warning' className='ml-1' onClick={ () => { this.toggleModal() } }>
+              <Button theme='warning' className='ml-1' onClick={ () => { this.toggleModal() } }>Close
                 <FontAwesomeIcon className='ml-1' icon={faTimes} />
               </Button>
-              <Button theme='secondary' className='ml-1' onClick={ () => this.starRecipeChild() }>
+              <Button id='deleteButton' theme='danger' className='ml-1' onClick={ () => { this.recipeDeleteChild() } }>Delete
+                <FontAwesomeIcon className='ml-1' icon={faTrash} />
+              </Button>
+              <Button theme='secondary' className='ml-1' onClick={ () => this.starRecipeChild() }>Star
                   <FontAwesomeIcon className='ml-1' icon={faStar} />
                 </Button>
-              <Button theme='info' className='ml-1' onClick={ () => { this.togglePopoverChild() } }>
+              <Button theme='info' className='ml-1' onClick={ () => { this.togglePopoverChild() } }>Add to Shopping List
                   <FontAwesomeIcon className='ml-1' icon={faListAlt} />
               </Button>
-              <Button theme='primary' className='ml-1' onClick={ () => this.recipeEditChild() }>
+              <Button theme='primary' className='ml-1' onClick={ () => this.recipeEditChild() }>Save
                 <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
               </Button>
             </ButtonGroup>

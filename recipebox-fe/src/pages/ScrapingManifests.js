@@ -195,10 +195,10 @@ export default class ScrapingManifests extends React.Component {
           </ModalBody>
           <ModalFooter>
             <ButtonGroup className='float-left'>
-              <Button theme='danger' className='ml-1' onClick={ () => { this.toggleNewModal() } }>
+              <Button theme='warning' className='ml-1' onClick={ () => { this.toggleNewModal() } }>Close
                 <FontAwesomeIcon className='ml-1' icon={faTimes} />
               </Button>
-              <Button theme='secondary' className='ml-1' onClick={ () => this.createSmanifestChild() }>
+              <Button theme='primary' className='ml-1' onClick={ () => this.createSmanifestChild() }>Save
                 <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
               </Button>
             </ButtonGroup>
@@ -223,13 +223,13 @@ export default class ScrapingManifests extends React.Component {
           </ModalBody>
           <ModalFooter>
             <ButtonGroup className='float-left'>
-              <Button id='deleteSmanifestButton' theme='danger' className='ml-1' onClick={ () => { this.deleteSmanifestChild() } }>
-                <FontAwesomeIcon className='ml-1' icon={faTrash} />
-              </Button>
-              <Button theme='warning' className='ml-1' onClick={ () => { this.toggleEditModal() } }>
+              <Button theme='warning' className='ml-1' onClick={ () => { this.toggleEditModal() } }>Close
                 <FontAwesomeIcon className='ml-1' icon={faTimes} />
               </Button>
-              <Button theme='primary' className='ml-1' onClick={ () => { this.editSmanifestChild() } }>
+              <Button id='deleteSmanifestButton' theme='danger' className='ml-1' onClick={ () => { this.deleteSmanifestChild() } }>Delete
+                <FontAwesomeIcon className='ml-1' icon={faTrash} />
+              </Button>
+              <Button theme='primary' className='ml-1' onClick={ () => { this.editSmanifestChild() } }>Save
                 <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
               </Button>
             </ButtonGroup>

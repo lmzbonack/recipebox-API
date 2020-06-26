@@ -122,7 +122,7 @@ export default class ShoppingListEdit extends React.Component {
               <Button theme='warning' className='ml-1' onClick={ () => { this.toggleRecipeModal() } }>
                 <FontAwesomeIcon className='ml-1' icon={faTimes} />
               </Button>
-              <Button theme='primary' className='ml-1' onClick={ () => this.createShoppingListChild() }>
+              <Button theme='primary' className='ml-1' onClick={ () => this.createShoppingListChild() }>Save
                 <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
               </Button>
             </ButtonGroup>

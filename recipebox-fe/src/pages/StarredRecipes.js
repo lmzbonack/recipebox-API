@@ -209,13 +209,13 @@ export default class StarredRecipes extends React.Component {
           </ModalBody>
           <ModalFooter>
             <ButtonGroup className='float-left'>
-              <Button theme='warning' className='ml-1' onClick={ () => { this.toggleModal() } }>
+              <Button theme='warning' className='ml-1' onClick={ () => { this.toggleModal() } }>Close
                 <FontAwesomeIcon className='ml-1' icon={faTimes} />
               </Button>
-              <Button theme='info' className='ml-1' onClick={ () => { this.togglePopoverChild() } }>
+              <Button theme='info' className='ml-1' onClick={ () => { this.togglePopoverChild() } }>Add to Shopping List
                   <FontAwesomeIcon className='ml-1' icon={faListAlt} />
               </Button>
-              <Button id='unstarButton' theme='primary' className='ml-1' onClick={ () => this.unstarRecipeChild() }>
+              <Button id='unstarButton' theme='danger' className='ml-1' onClick={ () => this.unstarRecipeChild() }>Unstar
                 <FontAwesomeIcon className='ml-1' icon={faStar} />
               </Button>
             </ButtonGroup>

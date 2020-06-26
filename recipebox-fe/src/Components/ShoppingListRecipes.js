@@ -7,7 +7,7 @@ import { Button,
          ListGroupItem } from "shards-react"
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faTimes } from "@fortawesome/free-solid-svg-icons"
+import { faTrash } from "@fortawesome/free-solid-svg-icons"
 
 import RecipeService from '../store/services/RecipeService'
 import confirmService from '../Components/confirmService'
@@ -76,7 +76,7 @@ export default class ShoppingListRecipes extends React.Component {
               { recipe.name }
               <ButtonGroup className='ml-2 float-right'>
                 <Button size='sm' id= {`deleteButton-${index}-${this.props.id}`} theme='danger' className='ml-1' onClick={ () => { this.handleDelete(index, recipe.id, recipe.name) } }>
-                  <FontAwesomeIcon className='ml-1' icon={faTimes} />
+                  <FontAwesomeIcon className='ml-1' icon={faTrash} />
                 </Button>
               </ButtonGroup>
             </ListGroupItem>

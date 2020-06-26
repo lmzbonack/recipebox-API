@@ -187,13 +187,13 @@ export default class SearchAutoSuggest extends React.Component {
           </ModalBody>
           <ModalFooter>
             <ButtonGroup className='float-left'>
-                <Button theme='danger' className='ml-1' onClick={ () => { this.toggleModal() } }>
+                <Button theme='warning' className='ml-1' onClick={ () => { this.toggleModal() } }>Close
                   <FontAwesomeIcon className='ml-1' icon={faTimes} />
                 </Button>
-                <Button theme='info' className='ml-1' onClick={ () => { this.togglePopoverChild() } }>
+                <Button theme='info' className='ml-1' onClick={ () => { this.togglePopoverChild() } }>Add to Shopping List
                   <FontAwesomeIcon className='ml-1' icon={faListAlt} />
                 </Button>
-                <Button theme='primary' className='ml-1' onClick={ () => this.starRecipeChild() }>
+                <Button theme='primary' className='ml-1' onClick={ () => this.starRecipeChild() }>Star
                   <FontAwesomeIcon className='ml-1' icon={faStar} />
                 </Button>
               </ButtonGroup>

@@ -202,14 +202,14 @@ export default class SingleShoppingList extends React.Component {
           <FormGroup>
             <InputGroup className='w-50 mb-2'>
               <FormInput size='sm' name='name' value={this.state.name} onChange={this.handleInputChange}/>
-              <Button size='sm' id={`deleteButton-${this.props.id}`} className='ml-1' theme="danger" onClick={ () => { this.deleteShoppingList() } }>
-                <FontAwesomeIcon className='ml-1' icon={faTrash} />
-              </Button>
-              <Button size='sm' className='ml-1' theme="info" onClick={ () => { this.navigateToDisplay(this.props.id) } }>
-                <FontAwesomeIcon className='ml-1' icon={faArrowRight} />
-              </Button>
               <Button size='sm' className='ml-1' theme="primary" onClick={ () => { this.updateName(this.state.name) } }>
                 <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
+              </Button>
+              <Button size='sm' className='ml-1' theme="info" onClick={ () => { this.navigateToDisplay(this.props.id) } }>Open Display View
+                <FontAwesomeIcon className='ml-1' icon={faArrowRight} />
+              </Button>
+              <Button size='sm' id={`deleteButton-${this.props.id}`} className='ml-1' theme="danger" onClick={ () => { this.deleteShoppingList() } }>
+                <FontAwesomeIcon className='ml-1' icon={faTrash} />
               </Button>
             </InputGroup>
             <h6>Recipes</h6>
