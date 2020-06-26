@@ -1,3 +1,4 @@
+#time="2020-06-25T09:04:56Z" level=error msg="Unable to obtain ACME certificate for domains \"*.recipebox.dev,recipebox.dev\" : unable to generate a certificate for the domains [*.recipebox.dev]: acme: error: 429 :: POST :: https://acme-v02.api.letsencrypt.org/acme/new-order :: urn:ietf:params:acme:error:rateLimited :: Error creating new order :: too many certificates already issued for exact set of domains: *.recipebox.dev,recipebox.dev: see https://letsencrypt.org/docs/rate-limits/,
 version: '3'
 
 services:
@@ -35,6 +36,24 @@ services:
       - "traefik.http.routers.redirect-https.entrypoints=web"
       - "traefik.http.routers.redirect-https.middlewares=redirect-to-https"
 
+  react:
+    container_name: react
+    build:
+      context: ./recipebox-fe/
+      dockerfile: Dockerfile
+    ports:
+      - "1337:80"
+    networks:
+      - proxy
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.react.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.react.entrypoints=websecure"
+      - "traefik.http.routers.react.tls.certresolver=lets-encr"
+      - "traefik.http.services.react.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+
   recipebox:
     container_name: recipebox
     build:
@@ -42,7 +61,7 @@ services:
       dockerfile: ./setup/docker/Dockerfile
     environment:
       DOMAIN: recipebox.dev
-      FLASK_ENV: dev
+      FLASK_ENV: prod
       MONGODB_DATABASE: recipebox
       MONGODB_HOSTNAME: mongodb
     env_file:
@@ -61,7 +80,7 @@ services:
       - mongodb
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.recipebox.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.recipebox.rule=Host(`api.${DOMAIN}`)"
       - "traefik.http.routers.recipebox.entrypoints=websecure"
       - "traefik.http.routers.recipebox.tls.certresolver=lets-encr"
       - "traefik.http.services.recipebox.loadbalancer.server.port=5000"
@@ -82,6 +101,7 @@ services:
       - instance/.env
     volumes:
       - "mongodbdata:/data/db"
+      - "./setup:/setup"
 
 volumes:
   mongodbdata:

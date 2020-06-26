@@ -1,18 +1,5 @@
 FROM python:3.7-slim
 
-ARG FLASK_ENV
-ARG JWT_SECRET_KEY
-ARG SECRET_KEY
-ENV FLASK_ENV=${FLASK_ENV} \
-    PYTHONFAULTHANDLER=1 \
-    PYTHONUNBUFFERED=1 \
-    PYTHONHASHSEED=random \
-    PIP_NO_CACHE_DIR=off \
-    FLASK_APP=app.app \
-    JWT_SECRET_KEY=${JWT_SECRET_KEY} \
-    SECRET_KEY=${SECRET_KEY} 
-
-
 ENV PIP_DISABLE_PIP_VERSION_CHECK=on
 ENV PIP_DEFAULT_TIMEOUT=100
 ENV POETRY_VERSION=1.0.3
@@ -25,7 +12,7 @@ WORKDIR /recipebox
 COPY poetry.lock pyproject.toml ./
 # Install dependencies
 RUN poetry config virtualenvs.create false \
-  && poetry install $(test "$FLASK_ENV" = production && echo "--no-dev") --no-interaction --no-ansi
+  && poetry install $(test "$FLASK_ENV" = prod && echo "--no-dev") --no-interaction --no-ansi
 COPY . .
 # Set up scripts
 # RUN chmod 755 /app/setup/scripts/entrypoint.sh
