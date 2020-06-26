@@ -1,4 +1,3 @@
-#time="2020-06-25T09:04:56Z" level=error msg="Unable to obtain ACME certificate for domains \"*.recipebox.dev,recipebox.dev\" : unable to generate a certificate for the domains [*.recipebox.dev]: acme: error: 429 :: POST :: https://acme-v02.api.letsencrypt.org/acme/new-order :: urn:ietf:params:acme:error:rateLimited :: Error creating new order :: too many certificates already issued for exact set of domains: *.recipebox.dev,recipebox.dev: see https://letsencrypt.org/docs/rate-limits/,
 version: '3'
 
 services:
@@ -19,7 +18,6 @@ services:
       - instance/.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      # - ./traefik/traefik.toml:/etc/traefik/traefik.toml:ro
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./traefik/acme/acme.json:/etc/traefik/acme/acme.json
       - /etc/localtime:/etc/localtime:ro
