@@ -49,7 +49,6 @@ export default class ShoppingListView extends React.Component {
   }
 
   async updateDisplayMode(mode) {
-    console.log(mode)
     this.setState({
       displayMode: mode
     })

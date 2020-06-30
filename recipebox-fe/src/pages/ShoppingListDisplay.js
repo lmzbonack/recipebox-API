@@ -40,14 +40,12 @@ export default class ShoppingListDisplay extends React.Component {
           shoppingLists: shoppingListResponse.data,
         })
       }
-      console.log(this.state)
     } catch (error) {
         toast.error(error.response.data.message)
     }
   }
 
   render() {
-    console.log(this.props.shoppingListId)
     return (
       <Container>
         <Row>

@@ -29,13 +29,19 @@ export default class AdderPopover extends React.Component {
   }
 
   toggle() {
-    this.setState({
-      open: !this.state.open
-    });
+    if (localStorage.getItem('authToken')) {
+      this.setState({
+        open: !this.state.open
+      });
+    } else {
+      this.props.relayToast("error", "Please sign in to do this")
+    }
   }
 
   async componentDidMount() {
-    await this.fetchShoppingLists()
+    if (localStorage.getItem('authToken')) {
+      await this.fetchShoppingLists()
+    }
     this.props.setTogglePopover(this.toggle)
   }
 

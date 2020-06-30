@@ -178,7 +178,6 @@ export default class SingleShoppingList extends React.Component {
     const requestPayload = {
       recipe_id: payload.id
     }
-    console.log(requestPayload)
     try {
       let updatedList = await ShoppingListService.deleteSingleRecipe(this.props.id, requestPayload)
       if (updatedList.status === 200) {

@@ -7,6 +7,7 @@ ShoppingListsRecipeAppenderApi, ShoppingListRecipeAppenderApi
 from recipebox.resources.auth import SignupApi, LoginApi
 from recipebox.resources.scraping_manifest import ScrapingManifestApi,\
 ScrapingManifestsApi
+from recipebox.resources.reset_password import ForgotPassword, ResetPassword
 
 
 def initialize_routes(api):
@@ -18,6 +19,8 @@ def initialize_routes(api):
     api.add_resource(ShoppingListApi, '/api/shopping-list/<id>')
     api.add_resource(SignupApi, '/api/auth/signup')
     api.add_resource(LoginApi, '/api/auth/login')
+    api.add_resource(ForgotPassword, '/api/auth/forgot')
+    api.add_resource(ResetPassword, '/api/auth/reset')
     api.add_resource(StarApi, '/api/star/<id>')
     api.add_resource(ScrapingManifestsApi, '/api/scraping-manifest')
     api.add_resource(ScrapingManifestApi, '/api/scraping-manifest/<id>')

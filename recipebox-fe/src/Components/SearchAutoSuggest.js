@@ -61,7 +61,9 @@ export default class SearchAutoSuggest extends React.Component {
   }
 
   componentDidMount() {
-    this.retrieveUserDetails()
+    if (localStorage.getItem('authToken')) {
+      this.retrieveUserDetails()
+    }
   }
 
   displayToastNotification(type, message) {
@@ -174,7 +176,7 @@ export default class SearchAutoSuggest extends React.Component {
               open={open}
               toggle={this.toggleModal}>
           <DynamicModalHeader recipe={this.state.activeRecipe}
-                              userData={this.state.userData}/>
+                              userData={this.state.userData || { authored_recipes:[], starred_recipes:[] }}/>
           <ModalBody style={{
               "overflowY": "auto",
               "height": "65vh"

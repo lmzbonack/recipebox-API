@@ -19,6 +19,7 @@ export default class SignUp extends React.Component {
     this.state = {
       email: '',
       password: '',
+      passwordConfirm: ''
     }
     this.handleInputChange = this.handleInputChange.bind(this);
     this.signUp = this.signUp.bind(this);
@@ -50,16 +51,24 @@ export default class SignUp extends React.Component {
       email: this.state.email,
       password: this.state.password
     }
-    try {
-      let signUpResponse = await UserService.signUp(payload)
-      if (signUpResponse.status === 201) {
-        let automaticSignIn = await UserService.login(payload)
-        if (automaticSignIn.status === 201) {
-          navigate('/recipes')
+    if (this.state.password === this.state.passwordConfirm) {
+      try {
+        let signUpResponse = await UserService.signUp(payload)
+        if (signUpResponse.status === 201) {
+          let automaticSignIn = await UserService.login(payload)
+          if (automaticSignIn.status === 201) {
+            navigate('/recipes')
+          }
         }
+      } catch (error) {
+        toast.error(error.response.data.message)
       }
-    } catch (error) {
-      toast.error(error.response.data.message)
+    } else {
+      toast.error("Passwords do not match")
+      this.setState({
+        password: '',
+        passwordConfirm: ''
+      })
     }
   }
 
@@ -76,9 +85,12 @@ export default class SignUp extends React.Component {
             <label htmlFor="#password">Password</label>
             <FormInput name="password" type="password" placeholder="Password" value={this.state.password} onChange={this.handleInputChange} />
           </FormGroup>
+          <FormGroup>
+            <label htmlFor="#passwordConfirm">Confirm Password</label>
+            <FormInput name="passwordConfirm" type="password" placeholder="Confirm Password" value={this.state.passwordConfirm} onChange={this.handleInputChange} />
+          </FormGroup>
         </Form>
-        <Button outline
-                theme="success"
+        <Button theme="primary"
                 onClick={this.signUp}>Sign Up</Button>
         <ToastContainer />
       </Container>

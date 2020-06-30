@@ -16,7 +16,6 @@ JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 DEBUG = True
 PROPAGATE_EXCEPTIONS = True
 
-
 # Hosted Mongo Solution
 # MONGODB_SETTINGS = {
 #     'db': 'recipebox',
@@ -27,8 +26,15 @@ PROPAGATE_EXCEPTIONS = True
 # Mongo in Docker
 MONGODB_SETTINGS = {
     'db': 'recipebox',
-    'host': f"mongodb://{os.environ['MONGODB_USERNAME']}:{os.environ['MONGODB_PASSWORD']}@{os.environ['MONGODB_HOSTNAME']}:27017/{os.environ['MONGODB_DATABASE']}"
+    'host': f"mongodb://{os.getenv('MONGODB_USERNAME')}:{os.getenv('MONGODB_PASSWORD')}@{os.getenv('MONGODB_HOSTNAME')}:27017/{os.getenv('MONGODB_DATABASE')}"
 }
 
 BCRYPT_LOG_ROUNDS = 15
 FLASK_APP = 'recipebox.app'
+
+
+# Local testing for email
+MAIL_SERVER = 'localhost'
+MAIL_PORT = 1025
+MAIL_USERNAME = 'support@recipebox.com'
+

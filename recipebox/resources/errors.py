@@ -1,49 +1,57 @@
-class InternalServerError(Exception):
+from flask_restful import HTTPException
+
+class InternalServerError(HTTPException):
     pass
 
-class ShoppingListAlreadyExistsError(Exception):
+class ShoppingListAlreadyExistsError(HTTPException):
     pass
 
-class ShoppingListDoesNotExistError(Exception):
+class ShoppingListDoesNotExistError(HTTPException):
     pass
 
-class UpdatingShoppingListError(Exception):
+class UpdatingShoppingListError(HTTPException):
     pass
 
-class DeletingShoppingListError(Exception):
+class DeletingShoppingListError(HTTPException):
     pass
 
-class SchemaValidationError(Exception):
+class SchemaValidationError(HTTPException):
     pass
 
-class RecipeAlreadyExistsError(Exception):
+class RecipeAlreadyExistsError(HTTPException):
     pass
 
-class UpdatingRecipeError(Exception):
+class UpdatingRecipeError(HTTPException):
     pass
 
-class DeletingRecipeError(Exception):
+class DeletingRecipeError(HTTPException):
     pass
 
-class RecipeDoesNotExistError(Exception):
+class RecipeDoesNotExistError(HTTPException):
     pass
 
-class ScrapingManifestAlreadyExistsError(Exception):
+class ScrapingManifestAlreadyExistsError(HTTPException):
     pass
 
-class UpdatingScrapingManifestError(Exception):
+class UpdatingScrapingManifestError(HTTPException):
     pass
 
-class DeletingScrapingManifestError(Exception):
+class DeletingScrapingManifestError(HTTPException):
     pass
 
-class ScrapingManifestDoesNotExistError(Exception):
+class ScrapingManifestDoesNotExistError(HTTPException):
     pass
 
-class EmailAlreadyExistsError(Exception):
+class EmailAlreadyExistsError(HTTPException):
     pass
 
-class UnauthorizedError(Exception):
+class EmailDoesNotExistError(HTTPException):
+    pass
+
+class BadTokenError(HTTPException):
+    pass
+
+class UnauthorizedError(HTTPException):
     pass
 
 errors = {
@@ -111,4 +119,13 @@ errors = {
         "message": "Deleting shopping list added by other is forbidden",
         "status": 403
     },
+    "EmailDoesNotExistError": {
+        "message": "Couldn't find the user with given email address",
+        "status": 400
+    },
+    "BadTokenError": {
+        "message": "Invalid token",
+        "status": 403
+    }
+      
 }

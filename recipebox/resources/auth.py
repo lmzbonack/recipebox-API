@@ -29,6 +29,7 @@ class SignupApi(Resource):
 
 class LoginApi(Resource):
     def post(self):
+        print('login called', flush=True)
         try:
             body = request.get_json()
             user = User.objects.get(email=body.get('email'))
