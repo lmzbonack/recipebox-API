@@ -1,4 +1,4 @@
-# Recipe Box
+# Recipe Box - https://recipebox.dev/
 
 > A project designed to make finding, shopping for, and cooking new things seamless
 
