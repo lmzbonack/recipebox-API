@@ -174,7 +174,7 @@ export default class ScrapingManifests extends React.Component {
               </span>
               <FontAwesomeIcon className='ml-1' icon={faList} style={{"display": "inline-flex", "verticalAlign": "center"}}/>
             </Button>
-            <Button className='float-right' size='sm' onClick={this.toggleNewModal}>Add
+            <Button className='float-right reponsive-margin' size='sm' onClick={this.toggleNewModal}>Add
               <FontAwesomeIcon className='ml-1' icon={faPlus} />
             </Button>
           </Col>

@@ -1,18 +1,28 @@
 import React from "react"
 import ExportRouter from "./Components/Router"
-import LocalNav from "./Components/Navbar"
+import NavRecipe from "./Components/Navbar"
 
 import "bootstrap/dist/css/bootstrap.min.css"
 import "shards-ui/dist/css/shards.min.css"
 import './App.css'
 
-const App = () => {
-  return (
-    <div>
-      <LocalNav/>
-      <ExportRouter/>
-    </div>
-  )
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      loggedIn: Boolean(localStorage.getItem('authToken'))
+    }
+  }
+
+  render() {
+    return(
+      <div>
+        <NavRecipe key={this.state.loggedIn}
+                   loggedIn={this.state.loggedIn}/>
+        <ExportRouter propogateLogin = {() => {this.setState({loggedIn:true})}}/>
+      </div>
+    )
+  }
 }
 
 export default App;

@@ -224,7 +224,7 @@ export default class CreatedRecipes extends React.Component {
             <Button theme='secondary' className='float-right ml-1' size='sm' onClick={this.retrievedNextCreatedRecipesPage}>Load More
                 <FontAwesomeIcon className='ml-1' icon={faList} />
             </Button>
-            <Button className='float-right' size='sm' onClick={this.toggleNewModal}>Add
+            <Button className='float-right reponsive-margin' size='sm' onClick={this.toggleNewModal}>Add
                 <FontAwesomeIcon className='ml-1' icon={faPlus} />
             </Button>
           </Col>
@@ -286,20 +286,20 @@ export default class CreatedRecipes extends React.Component {
                         relayToast={this.displayToastNotification}/>
           </ModalBody>
           <ModalFooter>
-            <ButtonGroup className='float-left'>
-              <Button theme='warning' className='ml-1' onClick={ () => { this.toggleModal() } }>Close
+            <ButtonGroup className='mt-auto'>
+              <Button size='sm' theme='warning' className='ml-1' onClick={ () => { this.toggleModal() } }>Close
                 <FontAwesomeIcon className='ml-1' icon={faTimes} />
               </Button>
-              <Button id='deleteButton' theme='danger' className='ml-1' onClick={ () => { this.recipeDeleteChild() } }>Delete
+              <Button size='sm' id='deleteButton' theme='danger' className='ml-1' onClick={ () => { this.recipeDeleteChild() } }>Delete
                 <FontAwesomeIcon className='ml-1' icon={faTrash} />
               </Button>
-              <Button theme='secondary' className='ml-1' onClick={ () => this.starRecipeChild() }>Star
+              <Button size='sm' theme='secondary' className='ml-1' onClick={ () => this.starRecipeChild() }>Star
                   <FontAwesomeIcon className='ml-1' icon={faStar} />
                 </Button>
-              <Button theme='info' className='ml-1' onClick={ () => { this.togglePopoverChild() } }>Add to Shopping List
+              <Button size='sm' theme='info' className='ml-1' onClick={ () => { this.togglePopoverChild() } }>Add to Shopping List
                   <FontAwesomeIcon className='ml-1' icon={faListAlt} />
               </Button>
-              <Button theme='primary' className='ml-1' onClick={ () => this.recipeEditChild() }>Save
+              <Button size='sm' theme='primary' className='ml-1' onClick={ () => this.recipeEditChild() }>Save
                 <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
               </Button>
             </ButtonGroup>

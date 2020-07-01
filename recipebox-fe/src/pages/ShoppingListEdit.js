@@ -36,6 +36,7 @@ export default class ShoppingListEdit extends React.Component {
   }
 
   async handleIngredientChangeTop(payload) {
+
     const updatedList= await ShoppingListService.fetchOne(payload.id)
     let index_to_replace = null
     this.state.shoppingLists.forEach( (item, idx) => {

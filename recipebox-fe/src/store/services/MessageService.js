@@ -3,7 +3,6 @@
  */
 
 import axios from 'axios'
-import Reset from '../../pages/Reset'
 
 export default {
   /**

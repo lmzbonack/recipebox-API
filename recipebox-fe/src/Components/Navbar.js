@@ -13,7 +13,10 @@ import {
   Collapse
 } from "shards-react";
 
-export default class NavExample extends React.Component {
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faBars } from "@fortawesome/free-solid-svg-icons"
+
+export default class NavRecipe extends React.Component {
   constructor(props) {
     super(props);
 
@@ -26,8 +29,17 @@ export default class NavExample extends React.Component {
       recipeDropdownOpen: false,
       profileDropdownOpen: false,
       shoppingListDropdownOpen: false,
-      collapseOpen: false
+      collapseOpen: false,
+      loggedIn: false
     };
+  }
+
+  componentDidMount() {
+    if(this.props.loggedIn){
+      this.setState({
+        loggedIn: true
+      })
+    }
   }
 
   toggleRecipeDropdown() {
@@ -67,11 +79,14 @@ export default class NavExample extends React.Component {
   }
 
   render() {
-    let isloggedIn = localStorage.getItem('authToken')
+    let isloggedIn = this.state.loggedIn
     return (
       <Navbar theme="light" expand="md">
         <NavbarBrand href="/recipes">Recipe Box</NavbarBrand>
-        <NavbarToggler onClick={this.toggleNavbar} />
+        <NavbarToggler onClick={this.toggleNavbar}>
+          <FontAwesomeIcon className='ml-1' icon={faBars} />
+        </NavbarToggler>
+
         <Collapse open={this.state.collapseOpen} navbar>
           <Nav navbar>
             <Dropdown
@@ -84,7 +99,7 @@ export default class NavExample extends React.Component {
               <DropdownMenu>
                 <DropdownItem href='/recipes'>What's New?</DropdownItem>
                 <DropdownItem href='/search'>Search</DropdownItem>
-                {isloggedIn !== null &&
+                {isloggedIn !== false &&
                 <span>
                   <DropdownItem href='/created-recipes'>Created Recipes</DropdownItem>
                   <DropdownItem href='/starred-recipes'>Starred Recipes</DropdownItem>
@@ -93,7 +108,7 @@ export default class NavExample extends React.Component {
               </DropdownMenu>
             </Dropdown>
 
-            {isloggedIn !== null &&
+            {isloggedIn !== false &&
             <Dropdown
               open={this.state.shoppingListDropdownOpen}
               toggle={this.toggleShoppingListDropdown}
@@ -108,7 +123,7 @@ export default class NavExample extends React.Component {
             </Dropdown>
             }
 
-            {isloggedIn !== null &&
+            {isloggedIn !== false &&
             <Dropdown
               open={this.state.profileDropdownOpen}
               toggle={this.toggleProfileDropdown}
@@ -124,21 +139,21 @@ export default class NavExample extends React.Component {
           </Nav>
 
           <Nav navbar className="ml-auto">
-            {isloggedIn === null &&
+            {isloggedIn === false &&
             <NavItem>
               <NavLink href="/login">
                 Login
               </NavLink>
             </NavItem>
             }
-            {isloggedIn !== null &&
+            {isloggedIn !== false &&
             <NavItem>
               <NavLink href="/login" onClick={() => {localStorage.removeItem('authToken')}}>
                 Logout
               </NavLink>
             </NavItem>
             }
-            {isloggedIn === null &&
+            {isloggedIn === false &&
             <NavItem>
               <NavLink href="/signup">
                 Sign Up

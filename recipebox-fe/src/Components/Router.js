@@ -27,7 +27,7 @@ function ExportRouter(props){
       <ShoppingListDisplay path="/shopping-list-display"/>
       <ShoppingListView path="/shopping-list/:shoppingListId"/>
       <ScrapingManifests path="created-manifests"/>
-      <Login path="/login"/>
+      <Login propogateLogin={ () => {props.propogateLogin()} } path="/login"/>
       <SignUp path="/signup"/>
       <Reset path="/reset"/>
       <NewPassword path='/reset/:token'/>
