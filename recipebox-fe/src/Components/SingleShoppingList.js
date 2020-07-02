@@ -197,6 +197,9 @@ export default class SingleShoppingList extends React.Component {
         <Button className='mb-2' outline onClick={this.toggle}>{ this.props.name }
           <FontAwesomeIcon className='ml-1' icon = { this.state.collapse ? faArrowUp : faArrowDown } />
         </Button>
+        <Button size='sm' className='ml-1' theme="info" onClick={ () => { this.navigateToDisplay(this.props.id) } }>Open Display View
+          <FontAwesomeIcon className='ml-1' icon={faArrowRight} />
+        </Button>
         { this.state.collapse &&
           <FormGroup>
             <InputGroup className='w-50 mb-2'>
@@ -204,15 +207,13 @@ export default class SingleShoppingList extends React.Component {
               <Button size='sm' className='ml-1' theme="primary" onClick={ () => { this.updateName(this.state.name) } }>
                 <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
               </Button>
-              <Button size='sm' className='ml-1' theme="info" onClick={ () => { this.navigateToDisplay(this.props.id) } }>Open Display View
-                <FontAwesomeIcon className='ml-1' icon={faArrowRight} />
-              </Button>
               <Button size='sm' id={`deleteButton-${this.props.id}`} className='ml-1' theme="danger" onClick={ () => { this.deleteShoppingList() } }>
                 <FontAwesomeIcon className='ml-1' icon={faTrash} />
               </Button>
             </InputGroup>
             <h6>Recipes</h6>
             <ShoppingListRecipes id={this.props.id}
+                                 key={this.props.addedRecipes}
                                  addedRecipes={this.props.addedRecipes}
                                  onRecipeDelete={this.handleRecipeDelete}
                                  relayToast={this.props.relayToast}/>
@@ -227,6 +228,7 @@ export default class SingleShoppingList extends React.Component {
         }
         <Collapse open={ this.state.collapse }>
           <ShoppingListItems id={this.props.id}
+                             key={this.props.ingredients}
                              ingredients={this.props.ingredients}
                              onIngredientDelete={this.handleIngredientDelete}
                              onIngredientUpdate={this.handleIngredientUpdate}

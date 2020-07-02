@@ -13,7 +13,7 @@ export default class Search extends React.Component{
 
   render(){
     return(
-      <Container>
+      <Container className='mt-3'>
         <h2>Search</h2>
         <SearchAutoSuggest />
       </Container>

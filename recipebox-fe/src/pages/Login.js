@@ -47,6 +47,7 @@ export default class Login extends React.Component {
   }
 
   async login() {
+    this.props.propogateLogin()
     const now = new Date()
     const payload = {
       email: this.state.email,

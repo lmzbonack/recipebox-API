@@ -157,7 +157,6 @@ export default class Recipes extends React.Component {
   }
 
   render() {
-    let isloggedIn = localStorage.getItem('authToken')
     const { open } = this.state
     return (
       <Container className='mt-3'>
