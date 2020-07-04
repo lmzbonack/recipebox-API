@@ -7,6 +7,7 @@ import SignUp from '../pages/SignUp'
 import Reset from '../pages/Reset'
 import NewPassword from '../pages/NewPassword'
 import Recipes from '../pages/Recipes'
+import RecipeDetail from '../pages/RecipeDetail'
 import ScrapingManifests from '../pages/ScrapingManifests'
 import Search from '../pages/Search'
 import StarredRecipes from '../pages/StarredRecipes'
@@ -20,6 +21,7 @@ function ExportRouter(props){
     <Router>
       <Recipes path="/"/>
       <Recipes path="/recipes"/>
+      <RecipeDetail path='/recipes/:id'/>
       <Search path="/search"/>
       <CreatedRecipes path="/created-recipes"/>
       <StarredRecipes path="/starred-recipes"/>

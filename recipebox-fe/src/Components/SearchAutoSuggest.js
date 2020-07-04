@@ -7,6 +7,8 @@ import DynamicModalHeader from '../Components/DynamicModalHeader'
 import RecipeService from '../store/services/RecipeService'
 import UserService from '../store/services/UserService'
 
+import { navigate } from "@reach/router"
+
 import { Button,
          ButtonGroup,
          Container,
@@ -15,7 +17,7 @@ import { Button,
          ModalFooter } from 'shards-react'
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faTimes, faStar, faListAlt } from "@fortawesome/free-solid-svg-icons"
+import { faTimes, faStar, faListAlt, faPepperHot } from "@fortawesome/free-solid-svg-icons"
 import AdderModal from '../Components/AdderModal';
 const debounce = require('lodash.debounce');
 
@@ -158,6 +160,7 @@ export default class SearchAutoSuggest extends React.Component {
       onChange: this.onChange
     };
     const status = (isLoading ? 'Loading...' : 'Waiting for input');
+    console.log(this.state.activeRecipe)
 
     return (
       <Container>
@@ -194,6 +197,9 @@ export default class SearchAutoSuggest extends React.Component {
                 </Button>
                 <Button theme='info' className='ml-1' onClick={ () => { this.togglePopoverChild() } }>Add to Shopping List
                   <FontAwesomeIcon className='ml-1' icon={faListAlt} />
+                </Button>
+                <Button theme='secondary' className='ml-1' onClick={ () => { navigate(`/recipes/${this.state.activeRecipe._id.$oid}`) } }>Open Cooking View
+                  <FontAwesomeIcon className='ml-1' icon={faPepperHot} />
                 </Button>
                 <Button theme='primary' className='ml-1' onClick={ () => this.starRecipeChild() }>Star
                   <FontAwesomeIcon className='ml-1' icon={faStar} />
