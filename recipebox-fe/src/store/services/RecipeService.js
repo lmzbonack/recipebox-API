@@ -28,16 +28,7 @@ export default {
    * @param {string} id the id of the recipe
    */
   async fetchOne(id) {
-    let token = await utils.retrieveAuthToken()
-    if (token) {
-      const config = {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-      return axios.get(`${process.env.REACT_APP_API_URL}/recipes/${id}`, config)
-    } else {
-      navigate('/login')
-      return 'No Token'
-    }
+      return axios.get(`${process.env.REACT_APP_API_URL}/recipes/${id}`)
   },
   /**
    * Retrieves all recipes no auth token needed

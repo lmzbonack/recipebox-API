@@ -28,7 +28,6 @@ export default class RecipeDetail extends React.Component {
           recipe: recipeResponse.data,
         })
       }
-      console.log(this.state)
     } catch (error) {
       toast.error(error.response.data.message)
     }

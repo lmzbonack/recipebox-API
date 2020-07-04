@@ -160,7 +160,6 @@ export default class SearchAutoSuggest extends React.Component {
       onChange: this.onChange
     };
     const status = (isLoading ? 'Loading...' : 'Waiting for input');
-    console.log(this.state.activeRecipe)
 
     return (
       <Container>

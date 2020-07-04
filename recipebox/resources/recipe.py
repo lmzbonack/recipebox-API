@@ -41,7 +41,6 @@ class RecipesApi(Resource):
 
 
 class RecipeApi(Resource):
-    @jwt_required
     def get(self, id):
         try:
             recipe = Recipe.objects.get(id=id).to_json()
