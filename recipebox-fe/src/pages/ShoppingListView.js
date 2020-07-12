@@ -142,14 +142,16 @@ export default class ShoppingListView extends React.Component {
               </ul>
               </span>
             ))}
-            { (this.state.byShoppingListExtras || []).map( (ing, index) => (
-              <span>
-                <h4>Extras</h4>
-                <ul>
-                  <li key={index}>{ing}</li>
-                </ul>
-              </span>
-            ))}
+            <span>
+              { this.state.byShoppingListExtras.length > 0 &&
+              <h4>Extras</h4>
+              }
+              <ul>
+              { (this.state.byShoppingListExtras || []).map( (ing, index) => (
+                <li key={index}>{ing}</li>
+              ))}
+              </ul>
+            </span>
           </span>
         }
         {displayMode === 'ingredient' &&
