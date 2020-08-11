@@ -12,7 +12,6 @@ In order to run the application locally you will need to supply the following en
 ```
 JWT_SECRET_KEY - Key for JWT configuration
 SECRET_KEY - Key for Flask App
-MONGO_PASSWORD - (Deprecated) Password for Mongo Atlas
 MONGODB_USERNAME - Username for the app to connect to the DB
 MONGODB_PASSWORD - Password for the app to connect to the DB
 MONGO_INITDB_ROOT_USERNAME - Root username for the DB
@@ -41,7 +40,7 @@ Mongo DB needs to be initialized after the app is started
 * docker exec -it mongodb bash
 * mongo -u mongodbuser -p
 * use recipebox
-* db.createUser({user: 'flaskuser', pwd: 'password', roles: [{role: 'readWrite', db: 'recipebox'}]})
+* db.createUser({user: 'flaskuser', pwd: 'password', roles: [{role: 'root', db: 'recipebox'}]})
 
 #### Traefik
 Scripting the Traefik deploy will be one of the next issues however for now I need to write down a few things here:

@@ -55,6 +55,7 @@ export default class SearchAutoSuggest extends React.Component {
       userData: null,
     };
     this.closeModal = this.closeModal.bind(this)
+    this.showRecipe = this.showRecipe.bind(this)
     this.displayToastNotification = this.displayToastNotification.bind(this)
     this.getSuggestionValue = this.getSuggestionValue.bind(this)
     this.toggleModal = this.toggleModal.bind(this)
@@ -110,14 +111,15 @@ export default class SearchAutoSuggest extends React.Component {
   }
 
   getSuggestionValue(suggestion) {
-    // Set the state for the modal and open it
+    return suggestion.name
+  }
+
+  showRecipe(event, {suggestion}) {
     this.setState({
       activeRecipe: suggestion
     })
     this.toggleModal()
-    return suggestion.name;
   }
-
 
   handleRecipeStar() {
     this.toggleModal()
@@ -172,6 +174,7 @@ export default class SearchAutoSuggest extends React.Component {
           onSuggestionsClearRequested={this.onSuggestionsClearRequested}
           getSuggestionValue={this.getSuggestionValue}
           renderSuggestion={renderSuggestion}
+          onSuggestionSelected={this.showRecipe}
           inputProps={inputProps} />
 
        <Modal size="lg h-100"
