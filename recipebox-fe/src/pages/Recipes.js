@@ -24,7 +24,7 @@ import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
 import 'ag-grid-community/dist/styles/ag-theme-balham.css'
 import LengthRenderer from '../Components/renderers/LengthRenderer'
-import AdderModal from '../Components/AdderModal';
+import AdderModal from '../Components/AdderModal'
 
 export default class Recipes extends React.Component {
   constructor(props) {
@@ -206,8 +206,8 @@ export default class Recipes extends React.Component {
                 </Button>
               </ButtonGroup>
               <AdderModal recipe={this.state.activeRecipe}
-                          setTogglePopover={togglePopover => this.togglePopoverChild = togglePopover}
-                          relayToast={this.displayToastNotification}/>
+                             setTogglePopover={togglePopover => this.togglePopoverChild = togglePopover}
+                             relayToast={this.displayToastNotification}/>
           </ModalFooter>
         </Modal>
         <div className='ag-theme-balham w-100'

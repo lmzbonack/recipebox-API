@@ -1,4 +1,8 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
+import { useForm } from 'react-hook-form'
+
 import { navigate } from "@reach/router"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -6,90 +10,97 @@ import 'react-toastify/dist/ReactToastify.css';
 import {
   Button,
   Container,
-  Form,
+  FormFeedback,
   FormInput,
   FormGroup,
 } from 'shards-react'
 
 import UserService from '../store/services/UserService'
 
+Login.propTypes = {
+  propogateLogin: PropTypes.func.isRequired
+}
 
-export default class Login extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      email: '',
-      password: ''
+export default function Login (props) {
+  const { handleSubmit, errors, register } = useForm()
+
+  function validateEmail (value) {
+    let error
+    const mailformat = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/
+    console.log(value)
+    if (!value) {
+      error = 'Email is required'
     }
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.login = this.login.bind(this);
+    if (!value.match(mailformat)) {
+      error = 'Please enter a valid email address'
+    }
+    return error || true
   }
 
-  handleInputChange(event) {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value
-    });
+  function validatePassword (value) {
+    let error
+    if (!value) {
+      error = 'Password is required'
+    }
+    return error || true
   }
 
-  componentDidMount() {
-    const listener = event => {
-      if (event.code === "Enter" || event.code === "NumpadEnter") {
-        this.login()
-      }
-    };
-    document.addEventListener("keydown", listener);
-    return () => {
-      document.removeEventListener("keydown", listener);
-    };
-  }
-
-  async login() {
-    this.props.propogateLogin()
+  async function onSubmit (values) {
     const now = new Date()
     const payload = {
-      email: this.state.email,
-      password: this.state.password
+      email: values.email,
+      password: values.password
     }
     try {
-      let loginResponse = await UserService.login(payload)
+      const loginResponse = await UserService.login(payload)
       if (loginResponse.status === 201) {
         const localStoragePayload = {
           token: loginResponse.data.token,
-          expiry: now.getTime() + 1000*60*60*24
+          expiry: now.getTime() + 1000 * 60 * 60 * 24
         }
         localStorage.setItem('authToken', JSON.stringify(localStoragePayload))
-        navigate('/recipes')
+        props.propogateLogin()
+        navigate('/')
       }
-    } catch(error) {
+    } catch (error) {
       toast.error(error.response.data.message)
     }
   }
 
-  render() {
-    return(
-      <Container className='mt-3'>
-        <h2>Login</h2>
-        <Form>
+  return (
+    <Container className='mt-3'>
+      <h2>Login</h2>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <FormGroup>
             <label htmlFor="#email">Email</label>
-            <FormInput name="email" placeholder="Email" value={this.state.email} onChange={this.handleInputChange}/>
+            <FormInput name="email"
+              invalid = { Boolean(errors.email) }
+              placeholder="user@example.com"
+              innerRef={register({ validate: validateEmail })} />
+            <FormFeedback>
+              {errors.email && errors.email.message}
+            </FormFeedback>
           </FormGroup>
+
           <FormGroup>
             <label htmlFor="#password">Password</label>
-            <FormInput name="password" type="password" placeholder="Password" value={this.state.password} onChange={this.handleInputChange} />
+            <FormInput name="password"
+              type="password"
+              invalid = { Boolean(errors.password) }
+              placeholder="*********"
+              innerRef={register({ validate: validatePassword })} />
+            <FormFeedback>
+              {errors.password && errors.password.message}
+            </FormFeedback>
           </FormGroup>
-        </Form>
-        <Button theme="primary"
-                onClick={this.login}>Login
-        </Button>
-        <div className='mt-1'>
-          <a href="/reset">Forgot Password?</a>
-        </div>
-        <ToastContainer/>
-      </Container>
-    )
-  }
+          <Button
+            type="submit">
+            Login
+          </Button>
+        </form>
+        <a href="/reset">Forgot Password?</a>
+      <ToastContainer />
+    </Container>
+  )
+
 }

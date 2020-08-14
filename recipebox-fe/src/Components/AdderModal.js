@@ -1,8 +1,11 @@
-import React from "react"
+import React, { useState, useEffect }  from "react"
+import { useForm } from 'react-hook-form'
+
 import { Button,
          ButtonGroup,
          FormGroup,
          FormSelect,
+         FormFeedback,
          Modal,
          ModalBody,
          ModalHeader,
@@ -14,53 +17,61 @@ import { faPencilAlt, faTimes } from "@fortawesome/free-solid-svg-icons"
 import UserService from '../store/services/UserService'
 import ShoppingListService from '../store/services/ShoppingListService'
 
-export default class AdderPopover extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      open: false,
-      shoppingListSelection: '',
-      shoppingListOptions: []
-    }
-    this.fetchShoppingLists = this.fetchShoppingLists.bind(this)
-    this.handleInputChange = this.handleInputChange.bind(this)
-    this.addToShoppingList = this.addToShoppingList.bind(this)
-    this.toggle = this.toggle.bind(this)
-  }
+export default function AdderModal (props) {
+  const [ open, setOpen ] = useState(false)
+  const [shoppingListOptions, setShoppingListOptions] = useState('')
+  const { handleSubmit, errors, register, setValue, getValues } = useForm()
 
-  toggle() {
+  useEffect(() => {
+    props.setTogglePopover(toggle)
     if (localStorage.getItem('authToken')) {
-      this.setState({
-        open: !this.state.open
-      });
+      fetchShoppingLists()
+    }
+    // Since our form is only a select we need use a listener to watch for enter
+    // and execute the function that adds a recipe to a list
+    const listener = event => {
+      if (event.code === "Enter" || event.code === "NumpadEnter") {
+        const values = getValues()
+        if (Object.keys(values).length) {
+          addToShoppingList()
+        }
+      }
+    };
+    document.addEventListener("keydown", listener);
+    return () => {
+      document.removeEventListener("keydown", listener);
+    };
+  },[])
+
+  function toggle () {
+    if (localStorage.getItem('authToken')) {
+      setOpen(!open)
     } else {
-      this.props.relayToast("error", "Please sign in to do this")
+      props.relayToast("error", "Please sign in to do this")
     }
   }
 
-  async componentDidMount() {
-    if (localStorage.getItem('authToken')) {
-      await this.fetchShoppingLists()
+  async function addToShoppingList (values) {
+    // If values are undefined get them
+    if (values === undefined) {
+      values = getValues()
     }
-    this.props.setTogglePopover(this.toggle)
-  }
-
-  async addToShoppingList() {
     const payload = {
-      recipe_id: this.props.recipe._id.$oid
+      recipe_id: props.recipe._id.$oid
     }
     try {
-      let shoppingListAdderResponse = await ShoppingListService.updateWithRecipe(this.state.shoppingListSelection, payload)
+      let shoppingListAdderResponse = await ShoppingListService.updateWithRecipe(values.shoppingListSelection, payload)
       if (shoppingListAdderResponse.status === 200) {
-        this.props.relayToast("success", "Recipe Added")
-        this.toggle()
+        props.relayToast("success", "Recipe Added")
+        toggle()
       }
     } catch (error) {
-      this.props.relayToast("error", error.response.data)
+      console.error(error)
+      props.relayToast("error", error.response.data)
     }
   }
 
-  async fetchShoppingLists() {
+  async function fetchShoppingLists () {
     try {
       let shoppingListResponse = await UserService.fetchUserData('shopping-list')
       if (shoppingListResponse.status === 200) {
@@ -71,66 +82,70 @@ export default class AdderPopover extends React.Component {
             id: item._id.$oid
           }
           listOptions.push(payload)
-          this.setState({
-            shoppingListOptions: listOptions,
-            shoppingListSelection: listOptions[0].id
-          })
+          setShoppingListOptions(listOptions)
+          setValue('shoppingListSelection', listOptions[0].id)
         });
       }
     } catch (error) {
-      this.props.relayToast("error", error.response.data.message)
+      props.relayToast("error", error.response.data.message)
     }
   }
 
-  handleInputChange(event) {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value
-    });
+  let lister = shoppingListOptions.length > 0
+  && shoppingListOptions.map( (value, index) => {
+    return (
+      <option key={index} value={value.id}>{value.name}</option>
+    )
+  })
+
+  function validateList (value) {
+    let error
+    if (!value) {
+      error = 'Selected shopping list cannot be blank'
+    }
+    return error || true
   }
 
-  render() {
-    const { open, shoppingListOptions } = this.state
-    let lister = shoppingListOptions.length > 0
-        && shoppingListOptions.map( (value, index) => {
-          return (
-            <option key={index} value={value.id}>{value.name}</option>
-          )
-        }, this)
-    return (
-      <div>
-        <Modal placement="bottom"
-               open={open}
-               toggle={this.toggle}>
-          <ModalHeader>Add {this.props.recipe.name} to shopping list</ModalHeader>
-          <ModalBody>
+  return (
+    <div>
+      <Modal placement="bottom"
+            open={open}
+            toggle={toggle}>
+        <ModalHeader>Add {props.recipe.name} to shopping list</ModalHeader>
+        <ModalBody>
+          <form onSubmit={handleSubmit(addToShoppingList)}>
             <FormGroup>
               <label htmlFor="#shoppingListSelection">Shopping List</label>
-              <FormSelect name='shoppingListSelection'
-                          size='sm'
-                          id='#shoppingListSelection'
-                          value={this.state.shoppingListSelection}
-                          onChange={this.handleInputChange}>
-                          {lister}
+              <FormSelect name="shoppingListSelection"
+                size='sm'
+                id='#shoppingListSelection'
+                invalid = { Boolean(errors.shoppingListSelection) }
+                innerRef={register({ validate: validateList })}>
+                {lister}
               </FormSelect>
+              <FormFeedback>
+                {errors.shoppingListSelection && errors.shoppingListSelection.message}
+              </FormFeedback>
             </FormGroup>
-          </ModalBody>
-          <ModalFooter>
-            <ButtonGroup className='float-left'>
-              <Button theme='danger' className='ml-1' onClick={ () => { this.toggle() } }>
-                <FontAwesomeIcon className='ml-1' icon={faTimes} />
-              </Button>
-              <Button className='ml-1'
-                      theme="secondary"
-                      onClick={ () => { this.addToShoppingList() } }>
-                <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
-              </Button>
-            </ButtonGroup>
-          </ModalFooter>
-        </Modal>
-      </div>
-    );
-  }
+            <Button
+              className='d-none'
+              type="submit">
+            </Button>
+          </form>
+        </ModalBody>
+        <ModalFooter>
+          <ButtonGroup className='float-left'>
+            <Button theme='danger' className='ml-1' onClick={ () => { toggle() } }>
+              <FontAwesomeIcon className='ml-1' icon={faTimes} />
+            </Button>
+            <Button className='ml-1'
+                    theme="secondary"
+                    onClick={ () => { addToShoppingList() } }>
+              <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
+            </Button>
+          </ButtonGroup>
+        </ModalFooter>
+      </Modal>
+    </div>
+  )
 }

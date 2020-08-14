@@ -25,6 +25,7 @@ export default class ShoppingListEdit extends React.Component {
       open: false,
       shoppingLists: [],
     }
+    this.handleListDeletion = this.handleListDeletion.bind(this)
     this.handleIngredientChangeTop = this.handleIngredientChangeTop.bind(this)
     this.handleShoppingListChangeCreate = this.handleShoppingListChangeCreate.bind(this)
     this.displayToastNotification = this.displayToastNotification.bind(this)
@@ -51,6 +52,19 @@ export default class ShoppingListEdit extends React.Component {
     this.setState({
       shoppingLists: copyLists
     })
+  }
+
+  async handleListDeletion () {
+    try {
+      let shoppingListResponse = await UserService.fetchUserData('shopping-list')
+      if (shoppingListResponse.status === 200) {
+        this.setState({
+          shoppingLists: shoppingListResponse.data,
+        })
+      }
+    } catch (error) {
+        toast.error(error.response.data.message)
+    }
   }
 
   handleShoppingListChangeCreate(payload) {
@@ -101,6 +115,7 @@ export default class ShoppingListEdit extends React.Component {
                                 ingredients={value.ingredients}
                                 addedRecipes={value.added_recipes}
                                 onIngredientChangeTop={this.handleIngredientChangeTop}
+                                onShoppingListDelete={this.handleListDeletion}
                                 relayToast={this.displayToastNotification}/>
           )
           })}
