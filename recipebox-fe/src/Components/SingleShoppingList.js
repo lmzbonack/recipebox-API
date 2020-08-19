@@ -1,12 +1,19 @@
 // Component to render list of items in a single cart
-import React from 'react'
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+
 import {
   Container,
+  Row,
+  Col,
   Button,
   Collapse,
   InputGroup,
+  ButtonGroup,
   FormInput,
+  FormFeedback,
   FormGroup } from 'shards-react'
+
 import { faArrowDown, faArrowUp, faArrowRight, faPencilAlt, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -19,222 +26,242 @@ import ShoppingListRecipes from './ShoppingListRecipes'
 import ShoppingListService from '../store/services/ShoppingListService'
 
 
-export default class SingleShoppingList extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      collapse: false,
-      name: '',
-      newIngredient: '',
-    }
-    this.toggle = this.toggle.bind(this)
-    this.handleRecipeDelete = this.handleRecipeDelete.bind(this)
-    this.handleIngredientDelete = this.handleIngredientDelete.bind(this)
-    this.handleIngredientUpdate = this.handleIngredientUpdate.bind(this)
-    this.handleInputChange = this.handleInputChange.bind(this)
-    this.updateName = this.updateName.bind(this)
-    this.deleteShoppingList = this.deleteShoppingList.bind(this)
-    this.addIngredient = this.addIngredient.bind(this)
-    this.navigateToDisplay = this.navigateToDisplay.bind(this)
+export default function SingleShoppingList (props) {
+  const [ collapse, setCollapse ] = useState(false)
+  const { handleSubmit, errors, register, setValue } = useForm()
+
+  function setName () {
+    setValue('name', props.name)
   }
 
-  componentDidMount() {
-    this.setState( (state, props) => ({
-      collapse: state.collapse,
-      name: props.name,
-      newIngredient: ''
-    }))
+  function toggle () {
+    setCollapse(!collapse)
+    setTimeout(setName, 10)
   }
 
-  toggle() {
-    this.setState({ collapse: !this.state.collapse })
-  }
-
-  handleInputChange(event) {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value
-    });
-  }
-
-  navigateToDisplay(listId) {
+  function navigateToDisplay (listId) {
     navigate(`/shopping-list/${listId}`)
   }
 
-  async addIngredient() {
-    let newIngredients = this.props.ingredients
-    if (this.state.newIngredient.length === 0) {
-      this.props.relayToast("error", "Cannot add blank ingredient")
+  async function addIngredient (values) {
+    if (values.newIngredient.length < 1) {
+      props.relayToast("error", "cannot add blank ingredient")
       return
     }
-    newIngredients.unshift(this.state.newIngredient)
+    let newIngredients = props.ingredients
+    newIngredients.unshift(values.newIngredient)
+
     const requestPayload = {
-      name: this.props.name,
+      name: props.name,
       ingredients: newIngredients
     }
     try {
-      let addIngredientResponse = await ShoppingListService.update(this.props.id, requestPayload)
+      let addIngredientResponse = await ShoppingListService.update(props.id, requestPayload)
       if (addIngredientResponse.status === 200) {
         const payload = {
-          id: this.props.id
+          id: props.id
         }
-        this.props.onIngredientChangeTop(payload)
-        this.setState({
-          newIngredient: ''
-        })
+        props.onIngredientChangeTop(payload)
+        setValue('newIngredient', undefined)
       }
     } catch (error) {
-      this.props.relayToast("error", error.response.data.message)
+      props.relayToast("error", error.response.data.message)
     }
   }
 
-  async updateName(name) {
+  async function updateName (values) {
     const requestPayload = {
-      name: name,
-      ingredients: this.props.ingredients
+      name: values.name,
+      ingredients: props.ingredients
     }
     try {
-      let updateNameResponse = await ShoppingListService.update(this.props.id, requestPayload)
+      let updateNameResponse = await ShoppingListService.update(props.id, requestPayload)
       if (updateNameResponse.status === 200) {
         const payload = {
-          id: this.props.id
+          id: props.id
         }
-        this.props.onIngredientChangeTop(payload)
+        props.onIngredientChangeTop(payload)
       }
     } catch (error) {
-      this.props.relayToast("error", error.response.data.message)
+      props.relayToast("error", error.response.data.message)
     }
   }
 
-  async deleteShoppingList() {
+
+  async function deleteShoppingList() {
     try {
       const result = await confirmService.show({
         title: 'Delete?',
-        target: `#deleteButton-${this.props.id}`
+        target: `#deleteButton-${props.id}`
       })
       if(result) {
-        let deleteRecipeResponse = await ShoppingListService.delete(this.props.id)
+        let deleteRecipeResponse = await ShoppingListService.delete(props.id)
         if (deleteRecipeResponse.status === 204) {
           const payload = {
-            id: this.props.id
+            id: props.id
           }
-          this.props.relayToast("success", "Shopping list deleted")
-          this.props.onIngredientChangeTop(payload)
+          props.relayToast("success", "Shopping list deleted")
+          props.onShoppingListDelete(payload)
         }
       }
     } catch (error) {
-      this.props.relayToast("error", error.response.data.message)
+      console.error(error)
+      props.relayToast("error", error.response.data.message)
     }
   }
 
-  async handleIngredientDelete(index) {
-    // Make changes using API
-    let changedIngredients = this.props.ingredients
+  async function handleIngredientDelete(index) {
+    let changedIngredients = props.ingredients
     changedIngredients.splice(index, 1)
 
     const requestPayload = {
-      name: this.props.name,
+      name: props.name,
       ingredients: changedIngredients
     }
     try {
-      let deleteIngredientResponse = await ShoppingListService.update(this.props.id, requestPayload)
+      let deleteIngredientResponse = await ShoppingListService.update(props.id, requestPayload)
       if (deleteIngredientResponse.status === 200) {
         const payload = {
           index: index,
-          id: this.props.id
+          id: props.id
         }
-        this.props.onIngredientChangeTop(payload)
+        props.onIngredientChangeTop(payload)
       }
     } catch (error) {
-      this.props.relayToast("error", error.response.data.message)
+      props.relayToast("error", error.response.data.message)
     }
   }
 
-  async handleIngredientUpdate(payload) {
-    let changedIngredients = this.props.ingredients
+  async function handleIngredientUpdate(payload) {
+    let changedIngredients = props.ingredients
     changedIngredients[payload.index] = payload.newItem
 
     const requestPayload = {
-      name: this.props.name,
+      name: props.name,
       ingredients: changedIngredients
     }
     try {
-      let updateIngredientResponse = await ShoppingListService.update(this.props.id, requestPayload)
+      let updateIngredientResponse = await ShoppingListService.update(props.id, requestPayload)
       if (updateIngredientResponse.status === 200) {
-        this.closeChildModal()
         const parentsPayload = {
-          id: this.props.id
+          id: props.id
         }
-        this.props.onIngredientChangeTop(parentsPayload)
+        props.onIngredientChangeTop(parentsPayload)
       }
     } catch (error) {
-      this.props.relayToast("error", error.response.data.message)
+      props.relayToast("error", error.response.data.message)
     }
   }
 
-  async handleRecipeDelete(payload) {
+  async function handleRecipeDelete(payload) {
     const requestPayload = {
       recipe_id: payload.id
     }
     try {
-      let updatedList = await ShoppingListService.deleteSingleRecipe(this.props.id, requestPayload)
+      let updatedList = await ShoppingListService.deleteSingleRecipe(props.id, requestPayload)
       if (updatedList.status === 200) {
         const parentsPayload = {
-          id: this.props.id
+          id: props.id
         }
-        this.props.onIngredientChangeTop(parentsPayload)
+        props.onIngredientChangeTop(parentsPayload)
       }
     } catch(error) {
-      this.props.relayToast("error", error.response.data.message)
+      props.relayToast("error", error.response.data.message)
     }
   }
 
-  render() {
-    return (
-      <Container>
-        <Button className='mb-2' outline onClick={this.toggle}>{ this.props.name }
-          <FontAwesomeIcon className='ml-1' icon = { this.state.collapse ? faArrowUp : faArrowDown } />
-        </Button>
-        <Button size='sm' className='ml-1' theme="info" onClick={ () => { this.navigateToDisplay(this.props.id) } }>Open Display View
-          <FontAwesomeIcon className='ml-1' icon={faArrowRight} />
-        </Button>
-        { this.state.collapse &&
-          <FormGroup>
-            <InputGroup className='w-50 mb-2'>
-              <FormInput size='sm' name='name' value={this.state.name} onChange={this.handleInputChange}/>
-              <Button size='sm' className='ml-1' theme="primary" onClick={ () => { this.updateName(this.state.name) } }>
-                <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
-              </Button>
-              <Button size='sm' id={`deleteButton-${this.props.id}`} className='ml-1' theme="danger" onClick={ () => { this.deleteShoppingList() } }>
-                <FontAwesomeIcon className='ml-1' icon={faTrash} />
-              </Button>
-            </InputGroup>
-            <h6>Recipes</h6>
-            <ShoppingListRecipes id={this.props.id}
-                                 key={this.props.addedRecipes}
-                                 addedRecipes={this.props.addedRecipes}
-                                 onRecipeDelete={this.handleRecipeDelete}
-                                 relayToast={this.props.relayToast}/>
-            <h6>Ingredients</h6>
-            <InputGroup className='w-50'>
-              <FormInput size='sm' placeholder= 'add ingredient' name='newIngredient' value={this.state.newIngredient} onChange={this.handleInputChange}/>
-              <Button  size='sm'className='ml-1' theme="primary" onClick={ () => { this.addIngredient() } }>
-                <FontAwesomeIcon className='ml-1' icon={faPlus} />
-              </Button>
-            </InputGroup>
-          </FormGroup>
-        }
-        <Collapse open={ this.state.collapse }>
-          <ShoppingListItems id={this.props.id}
-                             key={this.props.ingredients}
-                             ingredients={this.props.ingredients}
-                             onIngredientDelete={this.handleIngredientDelete}
-                             onIngredientUpdate={this.handleIngredientUpdate}
-                             closeModal={close => this.closeChildModal = close}/>
-        </Collapse>
-      </Container>
-    )
+  function validateName (value) {
+    let error
+    if (!value) {
+      error = 'Name cannot be blank'
+    }
+    return error || true
   }
+
+  return (
+    <Container>
+      <Button className='mb-2' outline onClick={toggle}>{ props.name }
+        <FontAwesomeIcon className='ml-1' icon = { collapse ? faArrowUp : faArrowDown } />
+      </Button>
+      <Button size='sm' className='ml-1' theme="info" onClick={ () => { navigateToDisplay(props.id) } }>Open Display View
+        <FontAwesomeIcon className='ml-1' icon={faArrowRight} />
+      </Button>
+      { collapse &&
+        <Container>
+          {/* Edit the recipe name or delete it */}
+          <Row className='w-50 my-2'>
+            <Col>
+              <form onSubmit={handleSubmit(updateName)}>
+                <div className="form-row">
+                  <FormGroup className="col">
+                    <FormInput
+                      name="name"
+                      size='sm'
+                      invalid = { Boolean(errors.name) }
+                      innerRef={register({ validate: validateName })} />
+                    <FormFeedback>
+                      {errors.name && errors.name.message}
+                    </FormFeedback>
+                  </FormGroup>
+
+                  <FormGroup className="col">
+                    <ButtonGroup>
+                      <Button size='sm' className='ml-1' theme="primary" type="submit">
+                        <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
+                      </Button>
+                      <Button size='sm' id={`deleteButton-${props.id}`} className='ml-1' theme="danger" onClick={ () => { deleteShoppingList() } }>
+                        <FontAwesomeIcon className='ml-1' icon={faTrash} />
+                      </Button>
+                    </ButtonGroup>
+                  </FormGroup>
+                </div>
+              </form>
+            </Col>
+          </Row>
+
+          <h6>Recipes</h6>
+          <ShoppingListRecipes id={props.id}
+                               key={props.addedRecipes}
+                               addedRecipes={props.addedRecipes}
+                               onRecipeDelete={handleRecipeDelete}
+                               relayToast={props.relayToast}/>
+          {/* Delete or edit ingredients */}
+          <h6>Ingredients</h6>
+          <Row className='w-50 my-2'>
+            <Col>
+              <form onSubmit={handleSubmit(addIngredient)}>
+                <div className="form-row">
+                  <FormGroup className="col">
+                    <FormInput
+                      name="newIngredient"
+                      size='sm'
+                      invalid = { Boolean(errors.newIngredient) }
+                      placeholder="add ingredient"
+                      innerRef={register()} />
+                    <FormFeedback>
+                      {errors.newIngredient && errors.newIngredient.message}
+                    </FormFeedback>
+                  </FormGroup>
+                  <FormGroup className="col">
+                    <Button size='sm' theme="primary" type="submit">
+                      <FontAwesomeIcon className='ml-1' icon={faPlus} />
+                    </Button>
+                  </FormGroup>
+                </div>
+              </form>
+            </Col>
+          </Row>
+        </Container>
+      }
+      <Collapse open={ collapse }>
+        <ShoppingListItems id={props.id}
+                           key={props.ingredients}
+                           ingredients={props.ingredients}
+                           onIngredientDelete={handleIngredientDelete}
+                           onIngredientUpdate={handleIngredientUpdate}/>
+      </Collapse>
+    </Container>
+  )
+
 }
+

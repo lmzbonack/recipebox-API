@@ -1,99 +1,117 @@
 import React from 'react'
-import { navigate } from "@reach/router"
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useForm } from 'react-hook-form'
+
+import { navigate } from '@reach/router'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import UserService from '../store/services/UserService'
 
 import {
   Button,
   Container,
-  Form,
+  FormFeedback,
   FormInput,
   FormGroup,
 } from 'shards-react'
 
-export default class SignUp extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      email: '',
-      password: '',
-      passwordConfirm: ''
+export default function SignUp () {
+  const { handleSubmit, errors, register } = useForm()
+
+  function validateEmail (value) {
+    let error
+    const mailformat = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/
+
+    if (!value) {
+      error = 'Email is required'
     }
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.signUp = this.signUp.bind(this);
+    if (!value.match(mailformat)) {
+      error = 'Please enter a valid email address'
+    }
+    return error || true
   }
 
-  handleInputChange(event) {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value
-    });
+  function validatePassword (value) {
+    let error
+    if (!value) {
+      error = 'Password is required'
+    }
+    return error || true
   }
 
-  componentDidMount() {
-    const listener = event => {
-      if (event.code === "Enter" || event.code === "NumpadEnter") {
-        this.signUp()
-      }
-    };
-    document.addEventListener("keydown", listener);
-    return () => {
-      document.removeEventListener("keydown", listener);
-    };
+  function validateVerifyPassword (value) {
+    let error
+    if (!value) {
+      error = 'Password verification is required'
+    }
+    return error || true
   }
 
-  async signUp() {
+  async function onSubmit (values) {
     const payload = {
-      email: this.state.email,
-      password: this.state.password
+      email: values.email,
+      password: values.password
     }
-    if (this.state.password === this.state.passwordConfirm) {
+    if (values.password === values.passwordVerify) {
       try {
-        let signUpResponse = await UserService.signUp(payload)
-        if (signUpResponse.status === 201) {
-          let automaticSignIn = await UserService.login(payload)
-          if (automaticSignIn.status === 201) {
-            navigate('/recipes')
-          }
+        const registerResponse = await UserService.signUp(payload)
+        if (registerResponse.status === 201) {
+          navigate('/login')
         }
       } catch (error) {
         toast.error(error.response.data.message)
       }
     } else {
-      toast.error("Passwords do not match")
-      this.setState({
-        password: '',
-        passwordConfirm: ''
-      })
+      toast.error('Passwords do not match')
     }
   }
 
-  render() {
-    return(
-      <Container className='mt-3'>
-        <h2>Sign Up</h2>
-        <Form>
-          <FormGroup>
-            <label htmlFor="#email">Email</label>
-            <FormInput name="email" placeholder="Email" value={this.state.email} onChange={this.handleInputChange}/>
-          </FormGroup>
-          <FormGroup>
-            <label htmlFor="#password">Password</label>
-            <FormInput name="password" type="password" placeholder="Password" value={this.state.password} onChange={this.handleInputChange} />
-          </FormGroup>
-          <FormGroup>
-            <label htmlFor="#passwordConfirm">Confirm Password</label>
-            <FormInput name="passwordConfirm" type="password" placeholder="Confirm Password" value={this.state.passwordConfirm} onChange={this.handleInputChange} />
-          </FormGroup>
-        </Form>
-        <Button theme="primary"
-                onClick={this.signUp}>Sign Up</Button>
-        <ToastContainer />
-      </Container>
-    )
-  }
+  return (
+    <Container className='mt-3'>
+      <h2>Sign Up</h2>
+      <form onSubmit={handleSubmit(onSubmit)}>
+
+        <FormGroup>
+          <label htmlFor="#email">Email</label>
+          <FormInput name="email"
+            invalid = { Boolean(errors.email) }
+            placeholder="user@example.com"
+            innerRef={register({ validate: validateEmail })} />
+          <FormFeedback>
+            {errors.email && errors.email.message}
+          </FormFeedback>
+        </FormGroup>
+
+        <FormGroup>
+          <label htmlFor="#password">Password</label>
+          <FormInput name="password"
+            type="password"
+            invalid = { Boolean(errors.password) }
+            placeholder="*********"
+            innerRef={register({ validate: validatePassword })} />
+          <FormFeedback>
+            {errors.password && errors.password.message}
+          </FormFeedback>
+        </FormGroup>
+
+        <FormGroup>
+          <label htmlFor="#passwordVerify">Verify Password</label>
+          <FormInput name="passwordVerify"
+            type="password"
+            invalid = { Boolean(errors.passwordVerify) }
+            placeholder="*********"
+            innerRef={register({ validate: validateVerifyPassword })} />
+          <FormFeedback>
+            {errors.passwordVerify && errors.passwordVerify.message}
+          </FormFeedback>
+        </FormGroup>
+
+        <Button
+          type="submit">
+          Register
+        </Button>
+      </form>
+      <ToastContainer />
+    </Container>
+  )
 }

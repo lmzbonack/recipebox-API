@@ -27,7 +27,7 @@ class ForgotPassword(Resource):
             expires = datetime.timedelta(hours=24)
             reset_token = create_access_token(str(user.id), expires_delta=expires)
 
-            return send_email('[Movie-bag] Reset Your Password',
+            return send_email('[Recipebox] Reset Your Password',
                               sender='support@recipebox.dev',
                               recipients=[user.email],
                               text_body=render_template('email/reset_password.txt',
@@ -60,7 +60,7 @@ class ResetPassword(Resource):
             user.hash_password()
             user.save()
 
-            return send_email('[Movie-bag] Password reset successful',
+            return send_email('[Recipebox] Password reset successful',
                               sender='support@recipebox.dev',
                               recipients=[user.email],
                               text_body='Password reset was successful',

@@ -1,4 +1,6 @@
 import React from 'react'
+import { useForm } from 'react-hook-form'
+
 import { navigate } from "@reach/router"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -6,80 +8,86 @@ import 'react-toastify/dist/ReactToastify.css';
 import {
   Button,
   Container,
-  Form,
+  FormFeedback,
   FormInput,
   FormGroup,
 } from 'shards-react'
 
 import MessageService from '../store/services/MessageService'
 
-export default class NewPassword extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      email: '',
-      password: '',
-      passwordConfirm: ''
+
+export default function NewPassword (props) {
+  const { handleSubmit, errors, register } = useForm()
+
+  function validatePassword (value) {
+    let error
+    if (!value) {
+      error = 'Password is required'
     }
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.resetPw = this.resetPw.bind(this);
+    return error || true
   }
 
-  handleInputChange(event) {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value
-    });
+  function validateVerifyPassword (value) {
+    let error
+    if (!value) {
+      error = 'Password verification is required'
+    }
+    return error || true
   }
 
-  componentDidMount() {
-    const listener = event => {
-      if (event.code === "Enter" || event.code === "NumpadEnter") {
-        this.signUp()
-      }
-    };
-    document.addEventListener("keydown", listener);
-    return () => {
-      document.removeEventListener("keydown", listener);
-    };
-  }
-
-  async resetPw() {
+  async function onSubmit(values) {
     const payload = {
-      password: this.state.password,
-      reset_token: this.props.token
+      password: values.password,
+      reset_token: props.token
     }
-    try {
-      let resetPwResponse = await MessageService.reset(payload)
-      if (resetPwResponse.status === 200) {
-        toast.success("Password has been reset. Redirecting you to login now")
-        navigate('/login')
+    if (values.password === values.passwordVerify) {
+      try {
+        const resetPwResponse = await MessageService.reset(payload)
+        if (resetPwResponse.status === 200) {
+          toast.success("Password has been reset. Redirecting you to login now")
+          navigate('/login')
+        }
+      } catch(error) {
+        toast.error(error.response.data.message)
       }
-    } catch(error) {
-      toast.error(error.response.data.message)
+    } else {
+      toast.error('Passwords do not match')
     }
   }
 
-  render() {
-    return(
-      <Container className='mt-3'>
-        <h2>Reset Password</h2>
-        <Form>
-          <FormGroup>
-            <label htmlFor="#password">New Password</label>
-            <FormInput name="password" type="password" placeholder="New Password" value={this.state.password} onChange={this.handleInputChange} />
-          </FormGroup>
-          <FormGroup>
-            <label htmlFor="#passwordConfirm">Confirm New Password</label>
-            <FormInput name="passwordConfirm" type="password" placeholder="Confirm New Password" value={this.state.passwordConfirm} onChange={this.handleInputChange} />
-          </FormGroup>
-        </Form>
-        <Button theme="primary"
-                onClick={this.resetPw}>Reset</Button>
-        <ToastContainer />
-      </Container>
-    )
-  }
+  return(
+    <Container className='mt-3'>
+      <h2>Reset Password</h2>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormGroup>
+          <label htmlFor="#password">Password</label>
+          <FormInput name="password"
+            type="password"
+            invalid = { Boolean(errors.password) }
+            placeholder="*********"
+            innerRef={register({ validate: validatePassword })} />
+          <FormFeedback>
+            {errors.password && errors.password.message}
+          </FormFeedback>
+        </FormGroup>
+
+        <FormGroup>
+          <label htmlFor="#passwordVerify">Verify Password</label>
+          <FormInput name="passwordVerify"
+            type="password"
+            invalid = { Boolean(errors.passwordVerify) }
+            placeholder="*********"
+            innerRef={register({ validate: validateVerifyPassword })} />
+          <FormFeedback>
+            {errors.passwordVerify && errors.passwordVerify.message}
+          </FormFeedback>
+        </FormGroup>
+        <Button
+          type="submit">
+          Register
+        </Button>
+      </form>
+      <ToastContainer />
+    </Container>
+  )
 }

@@ -1,126 +1,115 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 import { Button,
-         ButtonGroup,
-         Modal,
-         ModalBody,
-         ModalHeader,
-         Form,
-         FormInput,
-         FormGroup,
-         ListGroup,
-         ListGroupItem,
-         Container } from "shards-react"
+  ButtonGroup,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  FormFeedback,
+  FormInput,
+  FormGroup,
+  ListGroup,
+  ListGroupItem,
+  Container } from "shards-react"
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faTimes, faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons"
 
 import confirmService from '../Components/confirmService'
 
-export default class ShoppingListItems extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      open: false,
-      activeIndex: '',
-      activeValue: '',
-    };
-    this.toggleModal = this.toggleModal.bind(this)
-    this.openModal = this.openModal.bind(this)
-    this.handleDelete = this.handleDelete.bind(this)
-    this.handleUpdate = this.handleUpdate.bind(this)
-    this.handleInputChange = this.handleInputChange.bind(this)
+export default function ShoppingListItems (props) {
+  const [ open, setOpen ] = useState(false)
+  const [activeIndex, setActiveIndex] = useState('')
+
+  const { handleSubmit, errors, register, setValue } = useForm()
+
+  function toggleModal () {
+    setOpen(!open)
+    setActiveIndex('')
   }
 
-  componentDidMount() {
-    this.props.closeModal(this.toggleModal)
+  function setIngredient (value) {
+    setValue('ingredient', value)
   }
 
-  handleInputChange(event) {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value
-    });
+  function openModal (index, value) {
+    setOpen(!open)
+    setActiveIndex(index)
+    // This is dumb but works for now
+    setTimeout( () => {setIngredient(value)}, 10)
   }
 
-  toggleModal() {
-    this.setState({
-      open: !this.state.open,
-      activeIndex: '',
-      activeValue: ''
-    });
-  }
-
-  openModal(index, value){
-    this.setState({
-      open: !this.state.open,
-      activeIndex: index,
-      activeValue: value
-    });
-  }
-
-  async handleDelete(index) {
-    this.setState({
-      activeIndex: index
-    })
+  async function handleDelete (index) {
+    setActiveIndex(index)
     const result = await confirmService.show({
       title: 'Delete?',
-      target: `#deleteButtonSingleItem-${index}-${this.props.id}`
+      target: `#deleteButtonSingleItem-${index}-${props.id}`
     })
     if(result) {
-      const index = this.state.activeIndex
-      this.props.onIngredientDelete(index)
+      props.onIngredientDelete(activeIndex)
     }
   }
 
-  handleUpdate() {
+  function handleUpdate (values) {
     const payload = {
-      index: this.state.activeIndex,
-      newItem: this.state.activeValue
+      index: activeIndex,
+      newItem: values.ingredient
     }
-    this.props.onIngredientUpdate(payload)
+    props.onIngredientUpdate(payload)
   }
 
-  render() {
-    const { open } = this.state
-    return (
-      <Container>
-        <ListGroup flush small>
-          { this.props.ingredients.map( (ingredient, index) => (
-            <ListGroupItem className="mb-1" key={index}>
-              { ingredient }
-              <ButtonGroup className='ml-2 float-right'>
-                <Button size='sm' theme='primary' onClick={ () => { this.openModal(index, ingredient) } }>
-                  <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
-                </Button>
-                <Button size='sm' id={`deleteButtonSingleItem-${index}-${this.props.id}`} theme='danger' className='ml-1' onClick={ () => { this.handleDelete(index) } }>
-                  <FontAwesomeIcon className='ml-1' icon={faTrash} />
-                </Button>
-              </ButtonGroup>
-            </ListGroupItem>
-          ))}
-        </ListGroup>
-        <Modal open={open} toggle={this.toggleModal}>
-            <ModalHeader>Edit Ingredient</ModalHeader>
-          <ModalBody>
-            <Form>
-              <FormGroup>
-                <label htmlFor="#activeValue">Ingredient</label>
-                <FormInput name="activeValue"  value={this.state.activeValue} onChange={this.handleInputChange}/>
-              </FormGroup>
-              <ButtonGroup className='float-right'>
-                <Button className='w-20' theme='primary' onClick={ () => { this.handleUpdate() } }>
-                  <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
-                </Button>
-                <Button theme='danger' className='ml-1' onClick={ () => { this.toggleModal() } }>
-                  <FontAwesomeIcon className='ml-1' icon={faTimes} />
-                </Button>
-              </ButtonGroup>
-            </Form>
-          </ModalBody>
-        </Modal>
-      </Container>
-    )
+  function validateIngredient (value) {
+    let error
+    if (!value) {
+      error = 'Ingredient cannot be blank'
+    }
+    return error || true
   }
+
+  return (
+    <Container>
+      <ListGroup flush small>
+        { props.ingredients.map( (ingredient, index) => (
+          <ListGroupItem className="mb-1" key={index}>
+            { ingredient }
+            <ButtonGroup className='ml-2 float-right'>
+              <Button size='sm' theme='primary' onClick={ () => { openModal(index, ingredient) } }>
+                <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
+              </Button>
+              <Button size='sm' id={`deleteButtonSingleItem-${index}-${props.id}`} theme='danger' className='ml-1' onClick={ () => { handleDelete(index) } }>
+                <FontAwesomeIcon className='ml-1' icon={faTrash} />
+              </Button>
+            </ButtonGroup>
+          </ListGroupItem>
+        ))}
+      </ListGroup>
+      <Modal open={open} toggle={toggleModal}>
+          <ModalHeader>Edit Ingredient</ModalHeader>
+        <ModalBody>
+
+          <form onSubmit={handleSubmit(handleUpdate)}>
+            <FormGroup>
+              <label htmlFor="#ingredient">Ingredient</label>
+              <FormInput name="ingredient"
+                invalid = { Boolean(errors.ingredient) }
+                innerRef={register({ validate: validateIngredient })} />
+              <FormFeedback>
+                {errors.ingredient && errors.ingredient.message}
+              </FormFeedback>
+            </FormGroup>
+            <ButtonGroup className='float-right'>
+              <Button className='w-20' theme='primary' type="submit">
+                <FontAwesomeIcon className='ml-1' icon={faPencilAlt} />
+              </Button>
+              <Button theme='danger' className='ml-1' onClick={ () => { toggleModal() } }>
+                <FontAwesomeIcon className='ml-1' icon={faTimes} />
+              </Button>
+            </ButtonGroup>
+          </form>
+
+        </ModalBody>
+      </Modal>
+    </Container>
+  )
 }
