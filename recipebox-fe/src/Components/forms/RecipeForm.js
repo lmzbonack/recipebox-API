@@ -212,26 +212,6 @@ export default class RecipeForm extends React.Component {
       let prepTimeLocal = null
       let calculatedPrepTimeUnits = null
 
-      // Check for each expected result and if they exists update the state with them if they do not. Send nothing to state
-      if (scrapingResults.data.cook_time != null) {
-        if (scrapingResults.data.cook_time.unit) {
-          calculatedCookTimeUnits = this.unitsConverter(scrapingResults.data.cook_time.unit)
-        }
-        if (scrapingResults.data.cook_time.value) {
-          cookTimeLocal = scrapingResults.data.cook_time.value
-        }
-      }
-
-      // Check for each expected result and if they exists update the state with them if they do not. Send nothing to state
-      if (scrapingResults.data.prep_time != null) {
-        if (scrapingResults.data.prep_time.unit) {
-          calculatedPrepTimeUnits = this.unitsConverter(scrapingResults.data.prep_time.unit)
-        }
-        if (scrapingResults.data.prep_time.value) {
-          prepTimeLocal = scrapingResults.data.prep_time.value
-        }
-      }
-
       this.setState({
         name: scrapingResults.data.name,
         author: scrapingResults.data.author,

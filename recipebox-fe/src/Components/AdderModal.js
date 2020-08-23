@@ -41,6 +41,7 @@ export default function AdderModal (props) {
     return () => {
       document.removeEventListener("keydown", listener);
     };
+    // eslint-disable-next-line
   },[])
 
   function toggle () {
