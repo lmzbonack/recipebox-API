@@ -98,7 +98,7 @@ export default {
       const config = {
         headers: { Authorization: `Bearer ${token}` }
       }
-      return axios.post(`${process.env.REACT_APP_API_URL}/scrape`, payload, config)
+      return axios.post(`${process.env.REACT_APP_API_URL}/scrapio`, payload, config)
     } else {
       navigate('/login')
       return 'No Token'

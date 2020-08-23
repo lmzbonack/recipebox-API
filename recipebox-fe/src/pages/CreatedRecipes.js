@@ -254,7 +254,6 @@ export default class CreatedRecipes extends React.Component {
                        target="#scrapingButton"
                        toggle={this.toggleScrapingTooltip}>
                 Attempt to automatially retrieve the recipe specified at External Link and load it into the form.
-                This only works if a Scraping Manifest exists for the site you are trying to query.
               </Tooltip>
               <Button id='scrapingButton' theme='info' className='ml-1' onClick={ () => { this.scrapeRecipeChild() } }>Scrape
                 <FontAwesomeIcon className='ml-1' icon={faCaravan} />
