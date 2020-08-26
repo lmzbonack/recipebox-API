@@ -162,6 +162,7 @@ export default class RecipeForm extends React.Component {
       cook_time_units: this.state.cook_time_units,
       external_link: this.state.external_link,
     }
+
     try {
       let updatedRecipeResponse = await RecipeService.update(this.state.id, payload)
       if (updatedRecipeResponse.status === 200) {
