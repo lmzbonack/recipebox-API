@@ -73,7 +73,9 @@ export default class ShoppingListRecipes extends React.Component {
         <ListGroup small flush>
           { this.state.recipes.map( (recipe, index) => (
             <ListGroupItem className="mt-1 mb-1" key={index}>
-              { recipe.name }
+              <a href={`/recipes/${recipe.id}`}>
+                { recipe.name }
+              </a>
               <ButtonGroup className='ml-2 float-right'>
                 <Button size='sm' id= {`deleteButton-${index}-${this.props.id}`} theme='danger' className='ml-1' onClick={ () => { this.handleDelete(index, recipe.id, recipe.name) } }>
                   <FontAwesomeIcon className='ml-1' icon={faTrash} />

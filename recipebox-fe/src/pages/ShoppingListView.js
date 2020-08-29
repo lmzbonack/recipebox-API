@@ -119,7 +119,11 @@ export default class ShoppingListView extends React.Component {
             <h4>Recipes</h4>
             <ul>
             { (this.state.addedRecipes || []).map( (recipe, index) => (
-              <li key={index}>{recipe}</li>
+              <li>
+                <a key={index} href={`/recipes/${this.state.recipeIds[index]}`}>
+                  {recipe}
+                </a>
+              </li>
             ))}
             </ul>
             <h4>Items</h4>
@@ -134,12 +138,14 @@ export default class ShoppingListView extends React.Component {
           <span>
             { (this.state.byShoppingList || []).map( (recipe, index) => (
               <span key={index}>
-              <h4 key={recipe}>{recipe.name}</h4>
-              <ul>
-                { (recipe.ingredients || []).map( (ingredient, index) => (
-                  <li key={index+'sub'}>{ingredient}</li>
-                ))}
-              </ul>
+                <a key={index} href={`/recipes/${this.state.recipeIds[index]}`}>
+                  <h4 key={recipe}>{recipe.name}</h4>
+                </a>
+                <ul>
+                  { (recipe.ingredients || []).map( (ingredient, index) => (
+                    <li key={index+'sub'}>{ingredient}</li>
+                  ))}
+                </ul>
               </span>
             ))}
             <span>
