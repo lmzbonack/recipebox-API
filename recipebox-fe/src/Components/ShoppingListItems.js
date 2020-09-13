@@ -47,7 +47,7 @@ export default function ShoppingListItems (props) {
       target: `#deleteButtonSingleItem-${index}-${props.id}`
     })
     if(result) {
-      props.onIngredientDelete(activeIndex)
+      props.onIngredientDelete(index)
     }
   }
 
