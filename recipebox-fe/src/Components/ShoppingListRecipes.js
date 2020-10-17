@@ -4,6 +4,7 @@ import { Button,
          Container,
          ButtonGroup,
          ListGroup,
+         Progress,
          ListGroupItem } from "shards-react"
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -16,6 +17,7 @@ export default class ShoppingListRecipes extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      loading: true,
       activeId: '',
       activeName: '',
       recipes: []
@@ -33,7 +35,8 @@ export default class ShoppingListRecipes extends React.Component {
       localRecipes.push(item)
     }
     this.setState({
-      recipes: localRecipes
+      recipes: localRecipes,
+      loading: false
     })
   }
 
@@ -68,22 +71,28 @@ export default class ShoppingListRecipes extends React.Component {
   }
 
   render() {
+    console.log(this.state.loading)
     return (
       <Container>
-        <ListGroup small flush>
-          { this.state.recipes.map( (recipe, index) => (
-            <ListGroupItem className="mt-1 mb-1" key={index}>
-              <a href={`/recipes/${recipe.id}`}>
-                { recipe.name }
-              </a>
-              <ButtonGroup className='ml-2 float-right'>
-                <Button size='sm' id= {`deleteButton-${index}-${this.props.id}`} theme='danger' className='ml-1' onClick={ () => { this.handleDelete(index, recipe.id, recipe.name) } }>
-                  <FontAwesomeIcon className='ml-1' icon={faTrash} />
-                </Button>
-              </ButtonGroup>
-            </ListGroupItem>
-          ))}
-        </ListGroup>
+        { !this.state.loading &&
+          <ListGroup small flush>
+            { this.state.recipes.map( (recipe, index) => (
+              <ListGroupItem className="mt-1 mb-1" key={index}>
+                <a href={`/recipes/${recipe.id}`}>
+                  { recipe.name }
+                </a>
+                <ButtonGroup className='ml-2 float-right'>
+                  <Button size='sm' id= {`deleteButton-${index}-${this.props.id}`} theme='danger' className='ml-1' onClick={ () => { this.handleDelete(index, recipe.id, recipe.name) } }>
+                    <FontAwesomeIcon className='ml-1' icon={faTrash} />
+                  </Button>
+                </ButtonGroup>
+              </ListGroupItem>
+            ))}
+          </ListGroup>
+        }
+        { this.state.loading &&
+          <Progress theme="primary" value={100} />
+        }
       </Container>
     )
   }
