@@ -64,7 +64,7 @@ export default class ShoppingListView extends React.Component {
     })
     let byShoppingListPayload = []
     let byShoppingListExtrasPayload = []
-    // temporary structure to track all ingredients that we assingn to a shopping list
+    // temporary structure to track all ingredients that we assign to a shopping list
     let tempShoppingListTracker = []
     for (let recipeId of this.state.recipeIds) {
       try {
@@ -142,7 +142,7 @@ export default class ShoppingListView extends React.Component {
           </span>
         }
         {displayMode === 'default' && loading &&
-          <Progress theme="primary" value={100} />
+          <Progress className='w-50' theme="primary" value={100} />
         }
         {displayMode === 'recipe' && !loading &&
           <span>
@@ -171,7 +171,7 @@ export default class ShoppingListView extends React.Component {
           </span>
         }
         {displayMode === 'recipe' && loading &&
-          <Progress theme="primary" value={100} />
+          <Progress className='w-50' theme="primary" value={100} />
         }
         {displayMode === 'ingredient' &&
           <span>
