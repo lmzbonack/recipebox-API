@@ -1,6 +1,7 @@
 import React from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { navigate } from "@reach/router"
 
 import { Button,
          ButtonGroup,
@@ -18,7 +19,7 @@ import RecipeService from '../store/services/RecipeService'
 import UserService from '../store/services/UserService'
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faTimes, faStar, faListAlt, faList } from "@fortawesome/free-solid-svg-icons"
+import { faTimes, faStar, faListAlt, faList, faPepperHot } from "@fortawesome/free-solid-svg-icons"
 
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css'
@@ -200,6 +201,9 @@ export default class Recipes extends React.Component {
                 </Button>
                 <Button theme='info' className='ml-1' onClick={ () => { this.togglePopoverChild() } }>Add to Shopping List
                   <FontAwesomeIcon className='ml-1' icon={faListAlt} />
+                </Button>
+                <Button theme='secondary' className='ml-1' onClick={ () => { navigate(`/recipes/${this.state.activeRecipe._id.$oid}`) } }>Open Cooking View
+                  <FontAwesomeIcon className='ml-1' icon={faPepperHot} />
                 </Button>
                 <Button theme='primary' className='ml-1' onClick={ () => this.starRecipeChild() }>Star
                   <FontAwesomeIcon className='ml-1' icon={faStar} />

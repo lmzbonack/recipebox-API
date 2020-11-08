@@ -3,7 +3,8 @@ import React from 'react'
 import { Button,
          ButtonToolbar,
          ButtonGroup,
-         Container } from 'shards-react'
+         Container,
+         Progress } from 'shards-react'
 
 import ShoppingListService from '../store/services/ShoppingListService'
 import RecipeService from '../store/services/RecipeService'
@@ -16,7 +17,8 @@ export default class ShoppingListView extends React.Component {
       displayMode: 'default',
       created: null,
       ingredients: null,
-      addedRecipes: null
+      addedRecipes: null,
+      loading: true,
     }
     this.fetchRecipeName = this.fetchRecipeName.bind(this)
     this.updateDisplayMode = this.updateDisplayMode.bind(this)
@@ -33,7 +35,8 @@ export default class ShoppingListView extends React.Component {
       recipeIds: recipeIds,
       addedRecipes: recipeNames,
       byShoppingList: [],
-      byShoppingListExtras: []
+      byShoppingListExtras: [],
+      loading: false
     })
   }
 
@@ -56,9 +59,12 @@ export default class ShoppingListView extends React.Component {
   }
 
   async shoppingListByRecipeFormat() {
+    this.setState({
+      loading: true
+    })
     let byShoppingListPayload = []
     let byShoppingListExtrasPayload = []
-    // temporary structure to track all ingredients that we assingn to a shopping list
+    // temporary structure to track all ingredients that we assign to a shopping list
     let tempShoppingListTracker = []
     for (let recipeId of this.state.recipeIds) {
       try {
@@ -89,12 +95,13 @@ export default class ShoppingListView extends React.Component {
       }
     }
     this.setState({
-      byShoppingListExtras: byShoppingListExtrasPayload
+      byShoppingListExtras: byShoppingListExtrasPayload,
+      loading: false
     })
   }
 
   render() {
-    let { displayMode } = this.state
+    let { displayMode, loading } = this.state
     return (
       <Container>
         <h3 className='mt-2'>{this.state.name}</h3>
@@ -114,13 +121,13 @@ export default class ShoppingListView extends React.Component {
             }
           </ButtonGroup>
         </ButtonToolbar>
-        {displayMode === 'default' &&
+        {displayMode === 'default' && !loading &&
           <span>
             <h4>Recipes</h4>
             <ul>
             { (this.state.addedRecipes || []).map( (recipe, index) => (
-              <li>
-                <a key={index} href={`/recipes/${this.state.recipeIds[index]}`}>
+              <li key={index}>
+                <a href={`/recipes/${this.state.recipeIds[index]}`}>
                   {recipe}
                 </a>
               </li>
@@ -134,7 +141,10 @@ export default class ShoppingListView extends React.Component {
             </ul>
           </span>
         }
-        {displayMode === 'recipe' &&
+        {displayMode === 'default' && loading &&
+          <Progress className='w-50' theme="primary" value={100} />
+        }
+        {displayMode === 'recipe' && !loading &&
           <span>
             { (this.state.byShoppingList || []).map( (recipe, index) => (
               <span key={index}>
@@ -159,6 +169,9 @@ export default class ShoppingListView extends React.Component {
               </ul>
             </span>
           </span>
+        }
+        {displayMode === 'recipe' && loading &&
+          <Progress className='w-50' theme="primary" value={100} />
         }
         {displayMode === 'ingredient' &&
           <span>
